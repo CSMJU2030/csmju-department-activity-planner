@@ -1,3 +1,6 @@
+// Load .env before AppModule is evaluated: it decides at import time whether the
+// temporary LOCAL_TEST_ROLE identity replaces Core Hub authentication.
+import 'dotenv/config';
 import 'reflect-metadata';
 import { Logger, RequestMethod, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';

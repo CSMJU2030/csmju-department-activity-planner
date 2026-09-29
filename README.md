@@ -31,7 +31,30 @@ csmju-department-activity-planner/
 - frontend ส่ง `/api/*` และ `/auth/callback` ต่อไปที่ backend (`next.config.ts`) — คุกกี้ SSO อยู่ origin เดียวกับหน้าเว็บ
 - Server Actions ใน frontend ยังตรวจรูปแบบฟอร์มเหมือนเดิม แล้วส่งต่อไป backend พร้อมคุกกี้ของผู้ใช้
 
-## รันในเครื่อง
+## รันแบบไม่ต้องมี Core Hub (ชั่วคราว — เหมือน MIS เดิม)
+
+ตอนที่ Core Hub ยังไม่เสร็จ ใช้ผู้ใช้ทดสอบที่เลือกด้วยค่าตั้งฝั่ง server ไม่มีหน้า login:
+
+```dotenv
+# backend/.env
+LOCAL_TEST_ROLE=HEAD        # HEAD = หัวหน้าห้อง (สร้างกิจกรรมได้) · STUDENT = นักศึกษาทั่วไป
+# frontend/.env.local
+LOCAL_DEV_AUTH=true
+```
+
+```bash
+docker compose up -d csmju-department-activity-planner-db   # หรือ Postgres ของคุณ + รัน init.sql
+pnpm --filter backend start:dev
+pnpm --filter frontend dev                                   # เปิด http://localhost:3002
+```
+
+สลับผู้ใช้โดยแก้ `LOCAL_TEST_ROLE` แล้ว restart backend (ไม่รับจากฟอร์ม/คุกกี้/header) โหมดนี้ **ไม่ใช่การยืนยันตัวตนจริง**:
+backend ปฏิเสธการสตาร์ทถ้าตั้งค่านี้ตอน `NODE_ENV=production` และ frontend ไม่สนใจ `LOCAL_DEV_AUTH` ตอน production
+
+เมื่อต่อ Core Hub: ลบค่าทั้งสองออก (ระบบกลับไปใช้ Core Hub อัตโนมัติ) แล้วลบโฟลเดอร์ `backend/src/dev/`
+กับส่วนที่อ้างถึงใน `app.module.ts` และ `configuration.ts`
+
+## รันในเครื่องคู่กับ Core Hub
 
 ต้องมี Core Hub รันอยู่ก่อน (API `http://localhost:3000`, หน้าเว็บ `http://127.0.0.1:3100`) และลงทะเบียนระบบนี้ใน Core Hub แล้ว
 (name `csmju-department-activity-planner`, callback `http://localhost:3002/auth/callback`)

@@ -2,6 +2,8 @@
  * All environment-specific values live here. Nothing in the application code
  * may hard-code a URL, issuer, audience or secret (spec §30, §41.15).
  */
+import { localClassHeadIds } from '../dev/local-auth';
+
 export interface AppConfig {
   nodeEnv: string;
   port: number;
@@ -41,10 +43,14 @@ export default (): AppConfig => {
     subsystemId: process.env.SUBSYSTEM_ID ?? 'csmju-department-activity-planner',
     subsystemName: process.env.SUBSYSTEM_NAME ?? 'Department Activity Planner',
     activity: {
-      classHeadCoreUserIds: (process.env.CLASS_HEAD_CORE_USER_IDS ?? '')
-        .split(',')
-        .map((id) => id.trim())
-        .filter((id) => id.length > 0),
+      classHeadCoreUserIds: [
+        ...(process.env.CLASS_HEAD_CORE_USER_IDS ?? '')
+          .split(',')
+          .map((id) => id.trim())
+          .filter((id) => id.length > 0),
+        // TEMPORARY: the local test class head (LOCAL_TEST_ROLE=HEAD), see src/dev
+        ...localClassHeadIds(),
+      ],
     },
     coreHub: {
       url: coreHubUrl,

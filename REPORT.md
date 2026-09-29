@@ -44,9 +44,9 @@ pnpm -r typecheck · pnpm -r lint · backend/frontend build → ผ่าน
 | admin | ADMIN |
 
 ## สิ่งที่ต่างจาก MIS เดิม (ต้องอ่าน)
-1. **ต้อง login ผ่าน Core Hub ก่อนดูอะไรก็ได้** — MIS เดิมเปิดดูรายการกิจกรรมได้โดยไม่ login ตอนนี้ทุก endpoint ใต้ `/api/v1` ต้องมี token (มาตรฐานบังคับ) หน้าเว็บจึงแสดงปุ่มเข้าสู่ระบบแทน
-2. **ตัวตนจริงแทน `LOCAL_TEST_ROLE`** — ผู้ใช้มาจาก JWT ของ Core Hub ไม่มีชั้นตัวตนทดสอบแล้ว
-3. **หัวหน้าห้อง** — token ไม่มีข้อมูลนี้ จึงกำหนดผ่าน `CLASS_HEAD_CORE_USER_IDS` (ดู README) ต้องยืนยันกับ PM ว่า Core Hub จะส่งข้อมูลนี้ทางไหนในอนาคต
+1. **โหมดผู้ใช้ทดสอบชั่วคราว (แบบ MIS เดิม)** — ตั้ง `LOCAL_TEST_ROLE=HEAD|STUDENT` (backend) กับ `LOCAL_DEV_AUTH=true` (frontend) แล้วใช้งานได้โดยไม่มี Core Hub และไม่มีหน้า login เหมือน MIS เดิม ค่าเริ่มต้นเมื่อไม่ตั้ง = ตรวจ JWT ของ Core Hub ตามมาตรฐาน โหมดนี้คือ `LocalIdentityGuard` ใน `backend/src/dev/` **แยกจากชั้น auth ที่คัดลอกมา** (ไม่ได้แก้ไฟล์ใน `src/auth`) แต่ถือเป็นทางลัดยืนยันตัวตน: ปฏิเสธตอน production, ไม่รับ header/cookie/ฟอร์ม, log เตือนตอนสตาร์ท ต้องลบก่อนใช้จริง (ขั้นตอนใน README) ถ้าเปิดโหมดนี้ conformance จะไม่ผ่าน (ไม่มี 401)
+2. **เมื่อใช้ Core Hub จริง** — ต้อง login ก่อนดูกิจกรรมได้ (MIS เดิมเปิดดูได้โดยไม่ login) และผู้ใช้มาจาก JWT
+3. **หัวหน้าห้อง** — โหมดทดสอบ: `LOCAL_TEST_ROLE=HEAD` · โหมด Core Hub: JWT ไม่มีข้อมูลนี้ จึงกำหนดผ่าน `CLASS_HEAD_CORE_USER_IDS` (ต้องยืนยันกับ PM ว่าจะได้ข้อมูลนี้จากไหน)
 4. **ชื่อที่แสดง** — token มีแค่ `sub`/`email`/`role` ไม่มีชื่อ "ผู้จัด" และชื่อผู้สมัครทีมงานจึงแสดงเป็นอีเมล (เดิมเป็น `displayName` ของผู้ใช้ทดสอบ)
 5. **เปลี่ยนสถานะกิจกรรม** — MIS เดิมอนุญาตแค่ `OPEN/CLOSED/CANCELLED` ทั้งที่ dropdown มี `FULL/IN_PROGRESS/COMPLETED` (และ `CLOSED` ไม่มีใน enum ของ DB) ทำให้เลือก COMPLETED ไม่ได้และประเมินผลไม่เคยเปิดได้ ระบบใหม่รับสถานะเท่าที่ dropdown เสนอ (`OPEN/FULL/IN_PROGRESS/COMPLETED/CANCELLED`) ส่วน `DRAFT` ยังถูกปฏิเสธเหมือนเดิม
 6. **แก้กิจกรรม** — โค้ดเดิมส่ง `startAt/endAt = null` ไปที่ Prisma ตอนแก้ ซึ่งน่าจะทำให้บันทึกไม่ผ่าน ระบบใหม่คงเวลาเดิมไว้ถ้าฟอร์มไม่ส่งเวลามา

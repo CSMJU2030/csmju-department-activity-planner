@@ -29,7 +29,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       lang="th"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col"><a href="#main-content" className="skip-link">ข้ามไปเนื้อหา</a><Navigation canCreate={session?.canCreate ?? false} signedIn={session !== null} />{process.env.NODE_ENV !== "production" && <p className="bg-secondary text-primary text-sm leading-relaxed px-6 py-2 text-center">โหมดพัฒนา · {session?.me.email ?? "ยังไม่ได้เข้าสู่ระบบ"} · ข้อมูลอยู่ในฐานข้อมูลของระบบย่อยผ่าน backend</p>}<div id="main-content" className="flex-1" tabIndex={-1}>{children}</div><footer className="site-footer">CSMJU2030 · Activity Planning &amp; Improvement System<br />สาขาวิทยาการคอมพิวเตอร์ คณะวิทยาศาสตร์ มหาวิทยาลัยแม่โจ้</footer></body>
+      <body className="min-h-full flex flex-col"><a href="#main-content" className="skip-link">ข้ามไปเนื้อหา</a><Navigation canCreate={session?.canCreate ?? false} signedIn={session !== null && !session.localAuth} />{process.env.NODE_ENV !== "production" && <p className="bg-secondary text-primary text-sm leading-relaxed px-6 py-2 text-center">โหมดพัฒนา · {session?.me.email ?? "ยังไม่ได้เข้าสู่ระบบ"} · ข้อมูลอยู่ในฐานข้อมูลของระบบย่อยผ่าน backend</p>}<div id="main-content" className="flex-1" tabIndex={-1}>{children}</div><footer className="site-footer">CSMJU2030 · Activity Planning &amp; Improvement System<br />สาขาวิทยาการคอมพิวเตอร์ คณะวิทยาศาสตร์ มหาวิทยาลัยแม่โจ้</footer></body>
     </html>
   );
 }

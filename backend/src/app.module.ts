@@ -9,6 +9,8 @@ import { ResponseInterceptor } from './common/interceptors/response.interceptor'
 import configuration from './config/configuration';
 import { validateEnv } from './config/env.validation';
 import { ActivitiesModule } from './activities/activities.module';
+import { readLocalTestRole } from './dev/local-auth';
+import { LocalIdentityGuard } from './dev/local-identity.guard';
 import { HealthModule } from './health/health.module';
 import { PrismaModule } from './prisma/prisma.module';
 
@@ -26,7 +28,8 @@ import { PrismaModule } from './prisma/prisma.module';
   ],
   providers: [
     // Every route is authenticated unless explicitly marked @Public().
-    { provide: APP_GUARD, useClass: CoreHubJwtGuard },
+    // TEMPORARY: LOCAL_TEST_ROLE swaps in the local test identity (src/dev). Unset = Core Hub.
+    { provide: APP_GUARD, useClass: readLocalTestRole() ? LocalIdentityGuard : CoreHubJwtGuard },
     // Authorization runs after authentication.
     { provide: APP_GUARD, useClass: PermissionsGuard },
     { provide: APP_INTERCEPTOR, useClass: ResponseInterceptor },

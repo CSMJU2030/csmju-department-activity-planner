@@ -12,6 +12,14 @@ const BACKEND_URL = process.env.BACKEND_URL ?? "http://127.0.0.1:4202";
 /** Standard cookie name (auth-contract.md §5.1). */
 export const SSO_COOKIE = "core_hub_access_token";
 
+/**
+ * TEMPORARY: with LOCAL_DEV_AUTH=true no Core Hub cookie is needed; the backend
+ * answers as its LOCAL_TEST_ROLE user instead. Ignored in production. Remove
+ * together with the backend's src/dev once Core Hub login is connected.
+ */
+export const LOCAL_DEV_AUTH =
+  process.env.LOCAL_DEV_AUTH === "true" && process.env.NODE_ENV !== "production";
+
 // TODO(API-01): generate these from backend/openapi.json once the backend
 // exports it (tech-stack.md §3).
 export type SubsystemRole = "STUDENT" | "ALUMNI" | "STAFF" | "ADMIN";
@@ -94,15 +102,15 @@ export async function call<T>(
   path: string,
   init: { method?: string; body?: unknown } = {},
 ): Promise<CallResult<T>> {
-  const token = (await cookies()).get(SSO_COOKIE)?.value;
-  if (!token) return { ok: false, status: 401, message: "ยังไม่ได้เข้าสู่ระบบ" };
+  const token = LOCAL_DEV_AUTH ? undefined : (await cookies()).get(SSO_COOKIE)?.value;
+  if (!token && !LOCAL_DEV_AUTH) return { ok: false, status: 401, message: "ยังไม่ได้เข้าสู่ระบบ" };
 
   let res: Response;
   try {
     res = await fetch(`${BACKEND_URL}${path}`, {
       method: init.method ?? "GET",
       headers: {
-        Cookie: `${SSO_COOKIE}=${encodeURIComponent(token)}`,
+        ...(token ? { Cookie: `${SSO_COOKIE}=${encodeURIComponent(token)}` } : {}),
         ...(init.body !== undefined ? { "Content-Type": "application/json" } : {}),
       },
       body: init.body !== undefined ? JSON.stringify(init.body) : undefined,

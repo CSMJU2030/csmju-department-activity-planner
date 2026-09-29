@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
-import { getCapabilities, getMe, type ApiResult, type Me } from "./api";
+import { LOCAL_DEV_AUTH, getCapabilities, getMe, type ApiResult, type Me } from "./api";
 
-export type Session = { me: Me; canCreate: boolean };
+export type Session = { me: Me; canCreate: boolean; localAuth: boolean };
 
 /** Core Hub SSO entry point — the subsystem has no sign-in form of its own (SEC-05). */
 export const ssoUrl = `${process.env.CORE_HUB_WEB_URL ?? "http://127.0.0.1:3100"}/api/sso/${encodeURIComponent(
@@ -19,7 +19,11 @@ export async function getSession(): Promise<Session | null> {
     throw new Error(me.message);
   }
   const capabilities = await getCapabilities();
-  return { me: me.data, canCreate: capabilities.ok && capabilities.data.canCreateActivity };
+  return {
+    me: me.data,
+    canCreate: capabilities.ok && capabilities.data.canCreateActivity,
+    localAuth: LOCAL_DEV_AUTH,
+  };
 }
 
 /** Unwrap an API result for a page: an unknown id becomes the not-found page, other failures throw. */
