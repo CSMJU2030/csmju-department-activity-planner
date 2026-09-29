@@ -1,0 +1,63 @@
+# The Department Activity Planner runs its own API and its own PostgreSQL instance.
+# It never connects to the Core Hub database - only to the Core Hub JWKS URL.
+services:
+  csmju-department-activity-planner-db:
+    image: postgres:16-alpine
+    container_name: csmju-department-activity-planner-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: csmju_department_activity_planner
+    ports:
+      # 5434 on the host so it cannot collide with a Core Hub database on 5432
+      - '5434:5432'
+    volumes:
+      - csmju-department-activity-planner-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d csmju_department_activity_planner']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  csmju-department-activity-planner-api:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: csmju-department-activity-planner-api
+    restart: unless-stopped
+    depends_on:
+      csmju-department-activity-planner-db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: 4202
+      DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD:-postgres}@csmju-department-activity-planner-db:5432/csmju_department_activity_planner
+      # The Core Hub usually runs on the host machine during development.
+      CORE_HUB_URL: ${CORE_HUB_URL:-http://host.docker.internal:3000}
+      CORE_HUB_JWKS_URL: ${CORE_HUB_JWKS_URL:-http://host.docker.internal:3000/api/v1/.well-known/jwks.json}
+      CORE_HUB_ISSUER: ${CORE_HUB_ISSUER:-core-hub}
+      CORE_HUB_AUDIENCE: ${CORE_HUB_AUDIENCE:-csmju2030}
+      SUBSYSTEM_ID: ${SUBSYSTEM_ID:-csmju-department-activity-planner}
+      SUBSYSTEM_NAME: ${SUBSYSTEM_NAME:-Department Activity Planner}
+      CLASS_HEAD_CORE_USER_IDS: ${CLASS_HEAD_CORE_USER_IDS:-}
+    ports:
+      - '4202:4202'
+    extra_hosts:
+      # Lets the container reach a Core Hub running on the host (Linux support)
+      - 'host.docker.internal:host-gateway'
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://127.0.0.1:4202/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+volumes:
+  csmju-department-activity-planner-db-data:

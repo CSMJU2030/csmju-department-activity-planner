@@ -1,0 +1,118 @@
+// Department Activity Planner - OWN database schema.
+//
+// Naming follows the CSMJU2030 Subsystem Standard: PostgreSQL tables are plural
+// snake_case and every column is snake_case through @map, while Prisma/TypeScript
+// field names stay camelCase.
+//
+// This database belongs to the subsystem only. It never contains Core Hub
+// users, passwords, sessions or key material. `coreUserId` / `createdBy` are
+// EXTERNAL identity references to a Core Hub user id (`sub`) - nothing more.
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../generated/prisma"
+  moduleFormat = "cjs"
+}
+
+// The connection string is supplied by prisma.config.ts (CLI) and by the
+// PrismaPg adapter in PrismaService (runtime) - always this subsystem's own
+// DATABASE_URL, never the Core Hub database.
+datasource db {
+  provider = "postgresql"
+}
+
+enum ActivityStatus {
+  DRAFT
+  OPEN
+  FULL
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum ApplicationStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+model Activity {
+  id              String            @id @default(uuid())
+  title           String            @db.VarChar(150)
+  description     String            @db.VarChar(5000)
+  category        String            @db.VarChar(150)
+  startAt         DateTime          @map("start_at") @db.Timestamptz(3)
+  endAt           DateTime          @map("end_at") @db.Timestamptz(3)
+  location        String            @db.VarChar(200)
+  maxParticipants Int               @map("max_participants")
+  status          ActivityStatus    @default(OPEN)
+  createdBy       String            @map("created_by")
+  creatorName     String            @map("creator_name")
+  createdAt       DateTime          @default(now()) @map("created_at") @db.Timestamptz(3)
+  roles           ActivityRole[]
+  registrations   Registration[]
+  applications    TeamApplication[]
+  evaluations     Evaluation[]
+
+  @@index([createdBy])
+  @@index([status, startAt])
+  @@map("activity_activities")
+}
+
+model ActivityRole {
+  id           String            @id @default(uuid())
+  activityId   String            @map("activity_id")
+  roleName     String            @map("role_name") @db.VarChar(100)
+  nameKey      String            @map("name_key") @db.VarChar(100)
+  description  String            @default("") @db.VarChar(500)
+  maxMembers   Int               @map("max_members")
+  activity     Activity          @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  applications TeamApplication[]
+
+  @@unique([activityId, nameKey])
+  @@unique([id, activityId])
+  @@map("activity_roles")
+}
+
+model TeamApplication {
+  id         String            @id @default(uuid())
+  activityId String            @map("activity_id")
+  roleId     String            @map("role_id")
+  coreUserId String            @map("core_user_id")
+  userName   String            @map("user_name")
+  status     ApplicationStatus @default(PENDING)
+  createdAt  DateTime          @default(now()) @map("created_at") @db.Timestamptz(3)
+  activity   Activity          @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  role       ActivityRole      @relation(fields: [roleId, activityId], references: [id, activityId], onDelete: Cascade)
+
+  @@unique([activityId, coreUserId])
+  @@index([roleId, activityId, status])
+  @@index([coreUserId])
+  @@map("activity_team_applications")
+}
+
+model Registration {
+  id         String   @id @default(uuid())
+  activityId String   @map("activity_id")
+  coreUserId String   @map("core_user_id")
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+
+  @@unique([activityId, coreUserId])
+  @@index([coreUserId])
+  @@map("activity_registrations")
+}
+
+model Evaluation {
+  id          String   @id @default(uuid())
+  activityId  String   @map("activity_id")
+  coreUserId  String   @map("core_user_id")
+  rating      Int
+  liked       String   @db.VarChar(2000)
+  improvement String   @db.VarChar(2000)
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  activity    Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+
+  @@unique([activityId, coreUserId])
+  @@map("activity_evaluations")
+}
