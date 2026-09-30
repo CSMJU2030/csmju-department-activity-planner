@@ -129,4 +129,4 @@ node standards/conformance/run.js            # runtime — ต้องรัน
 - ทุกการแก้กิจกรรมล็อกแถวเดียวกัน (`SELECT … FOR UPDATE`) จึงไม่จองเกินที่นั่งแม้มีหลาย request/หลาย process
 - migration ห้ามลบ ห้าม squash
 
-
+ดูรายการสิ่งที่ต่างจาก MIS เดิม และข้อสมมติที่ตั้งเอง ใน [`REPORT.md`](REPORT.md)
