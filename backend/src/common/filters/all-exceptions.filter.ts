@@ -40,7 +40,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
         JSON.stringify({
           event: 'request.unhandled_error',
           method: request.method,
-          path: request.url,
+          path: request.path,
           status,
         }),
         exception instanceof Error ? exception.stack : String(exception),

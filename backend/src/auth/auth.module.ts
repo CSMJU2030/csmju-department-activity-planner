@@ -8,8 +8,8 @@ import { CoreHubJwtGuard } from './guards/core-hub-jwt.guard';
 import { PermissionsGuard } from './guards/permissions.guard';
 
 /**
- * Core Hub integration module. It contains NO login, registration, password or
- * session logic - authentication happens at the Core Hub (spec §7, §41).
+ * Core Hub integration module. Login/logout only redirect to Core Hub;
+ * no credentials, local identities or token issuance belong here.
  */
 @Global()
 @Module({

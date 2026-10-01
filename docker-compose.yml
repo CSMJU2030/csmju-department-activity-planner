@@ -33,9 +33,9 @@ services:
       NODE_ENV: ${NODE_ENV:-development}
       PORT: 4202
       DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD:-postgres}@csmju-department-activity-planner-db:5432/csmju_department_activity_planner
-      # The Core Hub usually runs on the host machine during development.
-      CORE_HUB_URL: ${CORE_HUB_URL:-http://host.docker.internal:3000}
-      CORE_HUB_JWKS_URL: ${CORE_HUB_JWKS_URL:-http://host.docker.internal:3000/api/v1/.well-known/jwks.json}
+      CORE_HUB_URL: ${CORE_HUB_URL:-https://csmju2030.jowave.com}
+      CORE_HUB_WEB_URL: ${CORE_HUB_WEB_URL:-https://csmju2030.jowave.com}
+      CORE_HUB_JWKS_URL: ${CORE_HUB_JWKS_URL:-https://csmju2030.jowave.com/api/v1/.well-known/jwks.json}
       CORE_HUB_ISSUER: ${CORE_HUB_ISSUER:-core-hub}
       CORE_HUB_AUDIENCE: ${CORE_HUB_AUDIENCE:-csmju2030}
       SUBSYSTEM_ID: ${SUBSYSTEM_ID:-csmju-department-activity-planner}

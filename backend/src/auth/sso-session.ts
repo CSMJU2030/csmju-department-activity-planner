@@ -1,58 +1,37 @@
-/**
- * Central SSO session cookie.
- *
- * After Core Hub redirects an authenticated user to `/auth/callback`, the
- * subsystem stores the *Core Hub* access token in an HttpOnly cookie so the
- * browser can keep calling the subsystem's own APIs without a second login.
- *
- * The cookie only carries a Core Hub token that is verified on every request
- * exactly like a Bearer token - the subsystem still creates no session, no
- * password and no identity of its own.
- */
-export const SSO_COOKIE_NAME = 'core_hub_access_token';
+import { timingSafeEqual } from 'node:crypto';
 
-/** Reads one cookie out of a raw `Cookie:` header without extra dependencies. */
+export const sessionCookieName = (id: string): string => `${id.replace(/-/g, '_')}_access_token`;
+export const stateCookieName = (id: string): string => `${id.replace(/-/g, '_')}_sso_state`;
+
 export function readCookie(header: string | undefined, name: string): string | null {
-  if (!header) {
-    return null;
-  }
-
-  for (const part of header.split(';')) {
+  for (const part of (header ?? '').split(';')) {
     const separator = part.indexOf('=');
-
-    if (separator === -1) {
-      continue;
-    }
-
-    if (part.slice(0, separator).trim() !== name) {
-      continue;
-    }
-
-    const value = part.slice(separator + 1).trim();
-
-    return value.length > 0 ? decodeURIComponent(value) : null;
+    if (separator < 0 || part.slice(0, separator).trim() !== name) continue;
+    try { return decodeURIComponent(part.slice(separator + 1).trim()) || null; }
+    catch { return null; }
   }
-
   return null;
 }
 
-/** Serialises the SSO cookie. `maxAgeSec` follows the Core Hub token lifetime. */
-export function buildSsoCookie(
-  token: string,
-  maxAgeSec: number,
-  secure: boolean,
-): string {
-  const attributes = [
-    `${SSO_COOKIE_NAME}=${encodeURIComponent(token)}`,
-    'Path=/',
-    'HttpOnly',
-    'SameSite=Lax',
-    `Max-Age=${Math.max(0, Math.floor(maxAgeSec))}`,
-  ];
+export function buildCookie(name: string, value: string, path: string, maxAgeSec: number, secure: boolean): string {
+  return [`${name}=${encodeURIComponent(value)}`, `Path=${path}`, 'HttpOnly', 'SameSite=Lax',
+    `Max-Age=${Math.max(0, Math.floor(maxAgeSec))}`, ...(secure ? ['Secure'] : [])].join('; ');
+}
 
-  if (secure) {
-    attributes.push('Secure');
-  }
+/** The origin is a fixed sentinel: only relative local paths are accepted. */
+export function safeNext(value: unknown): string {
+  if (typeof value !== 'string' || value.length < 1 || value.length > 512 ||
+      !value.startsWith('/') || value.startsWith('//') || value.includes('\\') ||
+      [...value].some((char) => char.charCodeAt(0) < 32 || char.charCodeAt(0) === 127)) return '/';
+  try {
+    const url = new URL(value, 'https://subsystem.invalid');
+    if (url.origin !== 'https://subsystem.invalid' || url.pathname === '/auth' || url.pathname.startsWith('/auth/')) return '/';
+    return url.pathname + url.search + url.hash;
+  } catch { return '/'; }
+}
 
-  return attributes.join('; ');
+export function matchingState(actual: string, expected: string): boolean {
+  const left = Buffer.from(actual);
+  const right = Buffer.from(expected);
+  return left.length === right.length && timingSafeEqual(left, right);
 }

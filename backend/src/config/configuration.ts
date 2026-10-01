@@ -2,7 +2,6 @@
  * All environment-specific values live here. Nothing in the application code
  * may hard-code a URL, issuer, audience or secret (spec §30, §41.15).
  */
-import { localClassHeadIds } from '../dev/local-auth';
 
 export interface AppConfig {
   nodeEnv: string;
@@ -15,6 +14,7 @@ export interface AppConfig {
   };
   coreHub: {
     url: string;
+    webUrl: string;
     jwksUrl: string;
     issuer: string;
     audience: string;
@@ -35,7 +35,7 @@ function num(value: string | undefined, fallback: number): number {
 }
 
 export default (): AppConfig => {
-  const coreHubUrl = process.env.CORE_HUB_URL ?? 'http://localhost:3000';
+  const coreHubUrl = process.env.CORE_HUB_URL ?? 'https://csmju2030.jowave.com';
 
   return {
     nodeEnv: process.env.NODE_ENV ?? 'development',
@@ -48,12 +48,11 @@ export default (): AppConfig => {
           .split(',')
           .map((id) => id.trim())
           .filter((id) => id.length > 0),
-        // TEMPORARY: the local test class head (LOCAL_TEST_ROLE=HEAD), see src/dev
-        ...localClassHeadIds(),
       ],
     },
     coreHub: {
       url: coreHubUrl,
+      webUrl: process.env.CORE_HUB_WEB_URL ?? coreHubUrl,
       jwksUrl:
         process.env.CORE_HUB_JWKS_URL ??
         `${coreHubUrl.replace(/\/+$/, '')}/api/v1/.well-known/jwks.json`,
@@ -62,7 +61,7 @@ export default (): AppConfig => {
       jwksCacheTtlMs: num(process.env.JWKS_CACHE_TTL_MS, 10 * 60 * 1000),
       jwksMinRefreshIntervalMs: num(process.env.JWKS_MIN_REFRESH_INTERVAL_MS, 30 * 1000),
       jwksRequestTimeoutMs: num(process.env.JWKS_REQUEST_TIMEOUT_MS, 5000),
-      clockToleranceSec: num(process.env.JWT_CLOCK_TOLERANCE_SEC, 5),
+      clockToleranceSec: Number(process.env.JWT_CLOCK_TOLERANCE_SEC ?? 5),
       dataCacheTtlMs: num(process.env.CORE_HUB_DATA_CACHE_TTL_MS, 10 * 60 * 1000),
       dataMinRefreshIntervalMs: num(process.env.CORE_HUB_DATA_MIN_REFRESH_INTERVAL_MS, 30 * 1000),
       dataRequestTimeoutMs: num(process.env.CORE_HUB_DATA_REQUEST_TIMEOUT_MS, 5000),

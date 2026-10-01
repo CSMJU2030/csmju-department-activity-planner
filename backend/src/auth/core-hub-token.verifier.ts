@@ -65,6 +65,7 @@ export class CoreHubTokenVerifier {
         issuer: this.config.get<string>('coreHub.issuer', 'core-hub'),
         audience: this.config.get<string>('coreHub.audience', 'csmju2030'),
         clockTolerance: this.config.get<number>('coreHub.clockToleranceSec', 5),
+        requiredClaims: ['sub', 'iat', 'exp'],
       });
       payload = result.payload as unknown as CoreHubTokenPayload;
     } catch (error) {
@@ -72,7 +73,7 @@ export class CoreHubTokenVerifier {
     }
 
     // Step 8: the subsystem also requires a usable subject.
-    if (typeof payload.sub !== 'string' || payload.sub.trim().length === 0) {
+    if (typeof payload.sub !== 'string' || payload.sub.trim().length === 0 || payload.sub.length > 64) {
       throw new TokenVerificationError(
         TokenRejectionReason.INVALID_CLAIMS,
         'Token has no subject claim',
@@ -80,6 +81,16 @@ export class CoreHubTokenVerifier {
       );
     }
 
+    const tolerance = Math.min(60, this.config.get<number>('coreHub.clockToleranceSec', 5));
+    const now = Math.floor(Date.now() / 1000);
+    if (
+      !Number.isInteger(payload.iat) || !Number.isInteger(payload.exp) ||
+      payload.iat! > now + tolerance || payload.exp! <= payload.iat! ||
+      payload.exp! - payload.iat! > 900 + tolerance ||
+      (payload.azp !== undefined && payload.azp !== this.config.get<string>('subsystemId', 'csmju-department-activity-planner'))
+    ) {
+      throw new TokenVerificationError(TokenRejectionReason.INVALID_CLAIMS, 'Invalid access token lifetime or authorized party', header.kid);
+    }
     return payload;
   }
 

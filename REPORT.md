@@ -68,3 +68,8 @@ pnpm -r typecheck · pnpm -r lint · backend/frontend build → ผ่าน
 - `backend/openapi.json` สร้างแล้ว (17 เส้นทาง ผ่าน `pnpm --filter backend generate:openapi` ไม่ต้องใช้ DB/Core Hub และได้ไฟล์เดิมทุกครั้ง) แต่ schema ของ response ยังไม่ได้ระบุ (เห็นเฉพาะ request/params) และ frontend ยังเขียน type ของ API เอง (TODO(API-01) เหมือน reference) ยังไม่ได้ generate ด้วย openapi-typescript — ไฟล์นี้ CODEOWNERS ให้ PM ร่วม approve
 - UI ยังใช้ Tailwind ตรงๆ และมี emoji/`<img>` เหมือน MIS ยังไม่ผ่าน `@csmju2030/design-system` (ไม่ได้ตรวจในรอบนี้)
 - ยังไม่มี seed ข้อมูลตัวอย่าง (MIS เดิมก็ไม่มี)
+# อัปเดตการเชื่อม Core — 1 ตุลาคม 2026
+
+โค้ดปรับตาม standards 1.7.0 / auth contract 1.2 แล้ว: state-bound SSO, cookie แยกชื่อระบบ, อายุ token/azp, logout กลาง และเอา runtime identity bypass ออก
+รายละเอียดล่าสุด: [docs/core-integration.md](docs/core-integration.md)
+เนื้อหาด้านล่างเป็นรายงานก่อนการปรับครั้งนี้ ไม่ใช่ผลทดสอบปัจจุบันหรือการรับรองเชื่อม Core จริง

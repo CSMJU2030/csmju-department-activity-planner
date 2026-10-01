@@ -43,7 +43,11 @@ class OpenApiModule {}
 
 async function main(): Promise<void> {
   const app = await NestFactory.create(OpenApiModule, { logger: false });
-  app.setGlobalPrefix('api', { exclude: [{ path: 'auth/callback', method: RequestMethod.GET }] });
+  app.setGlobalPrefix('api', { exclude: [
+    { path: 'auth/login', method: RequestMethod.GET },
+    { path: 'auth/callback', method: RequestMethod.GET },
+    { path: 'auth/logout', method: RequestMethod.POST },
+  ] });
 
   const document = SwaggerModule.createDocument(
     app,

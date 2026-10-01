@@ -1,5 +1,4 @@
-// Load .env before AppModule is evaluated: it decides at import time whether the
-// temporary LOCAL_TEST_ROLE identity replaces Core Hub authentication.
+// Load deployment settings before bootstrapping the application.
 import 'dotenv/config';
 import 'reflect-metadata';
 import { Logger, RequestMethod, ValidationPipe } from '@nestjs/common';
@@ -15,7 +14,11 @@ async function bootstrap(): Promise<void> {
   // The central SSO callback stays at the root path, because that is the URL
   // registered for this subsystem in the Core Hub Subsystem Registry.
   app.setGlobalPrefix('api', {
-    exclude: [{ path: 'auth/callback', method: RequestMethod.GET }],
+    exclude: [
+      { path: 'auth/login', method: RequestMethod.GET },
+      { path: 'auth/callback', method: RequestMethod.GET },
+      { path: 'auth/logout', method: RequestMethod.POST },
+    ],
   });
 
   app.useGlobalPipes(

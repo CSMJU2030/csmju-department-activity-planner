@@ -209,4 +209,13 @@ describe('JwksService (spec §10, §11, §40)', () => {
 
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
+
+  it('limits repeated empty-cache fetches during a Core outage', async () => {
+    service = new JwksService(configStub({ 'coreHub.jwksMinRefreshIntervalMs': 30000 }), new AuthEventsLogger());
+    const fetchMock = jest.fn().mockRejectedValue(new Error('unavailable'));
+    global.fetch = fetchMock;
+    await expect(service.getKey('core-hub-2026')).rejects.toMatchObject({ reason: TokenRejectionReason.JWKS_UNAVAILABLE });
+    await expect(service.getKey('core-hub-2026')).rejects.toMatchObject({ reason: TokenRejectionReason.JWKS_UNAVAILABLE });
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
 });

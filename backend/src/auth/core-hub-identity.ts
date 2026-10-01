@@ -19,6 +19,7 @@ export interface CoreHubIdentity {
   coreRole: string;
   /** Core Hub session id (`sid`). */
   sessionId?: string;
+  expiresAt?: string;
   /** Result of the subsystem's own role mapping. */
   subsystemRole: SubsystemRole;
 }
@@ -32,4 +33,5 @@ export interface CoreHubTokenPayload {
   aud: string | string[];
   iat?: number;
   exp?: number;
+  azp?: string;
 }

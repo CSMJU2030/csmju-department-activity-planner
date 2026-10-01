@@ -135,6 +135,17 @@ describe('CoreHubTokenVerifier - authentication tests (spec §13, §36)', () => 
     });
   });
 
+  it.each([
+    { omitIat: true }, { omitExp: true }, { expiresInSec: 604800 },
+    { issuedAtOffsetSec: 120 }, { azp: 'another-subsystem' }, { sub: 'x'.repeat(65) },
+  ])('rejects invalid access-token scope/lifetime: %j', async (options) => {
+    await expect(verifier.verify(await signCoreHubToken(key, options))).rejects.toMatchObject({ reason: TokenRejectionReason.INVALID_CLAIMS });
+  });
+
+  it('accepts a token scoped to this subsystem', async () => {
+    await expect(verifier.verify(await signCoreHubToken(key, { azp: 'csmju-department-activity-planner' }))).resolves.toMatchObject({ sub: 'user-003' });
+  });
+
   it('rejects a malformed token', async () => {
     await expect(verifier.verify('not-a-jwt')).rejects.toMatchObject({
       reason: TokenRejectionReason.MALFORMED_TOKEN,
