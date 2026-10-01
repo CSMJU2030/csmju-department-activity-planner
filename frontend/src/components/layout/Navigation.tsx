@@ -11,6 +11,6 @@ export function Navigation({ canCreate = false, signedIn = false }: { canCreate?
       <Link href="/my-activities" aria-current={pathname === "/my-activities" ? "page" : undefined}>กิจกรรมของฉัน</Link>
     </nav>
     {canCreate && <Link href="/activities/create" className="primary-link">+ สร้างกิจกรรม</Link>}
-    {signedIn && <form action="/logout" method="post"><button type="submit" className="secondary-link">ออกจากระบบ</button></form>}
+    {signedIn && <form action="/auth/logout" method="post" onSubmit={() => sessionStorage.removeItem("activity-planner:was-signed-in")}><button type="submit" className="secondary-link">ออกจากระบบ</button></form>}
   </div></header>;
 }

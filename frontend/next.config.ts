@@ -13,6 +13,8 @@ const nextConfig: NextConfig = {
     return [
       { source: "/api/:path*", destination: `${BACKEND_URL}/api/:path*` },
       { source: "/auth/callback", destination: `${BACKEND_URL}/auth/callback` },
+      { source: "/auth/login", destination: `${BACKEND_URL}/auth/login` },
+      { source: "/auth/logout", destination: `${BACKEND_URL}/auth/logout` },
     ];
   },
 };

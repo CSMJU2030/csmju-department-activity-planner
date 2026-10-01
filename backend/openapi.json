@@ -502,13 +502,59 @@
         ]
       }
     },
+    "/auth/login": {
+      "get": {
+        "operationId": "SsoCallbackController_login",
+        "parameters": [
+          {
+            "name": "next",
+            "required": false,
+            "in": "query",
+            "description": "Local path to return to after SSO (1–512 characters)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "302": {
+            "description": "Redirect to Core Hub with state cookie"
+          }
+        },
+        "tags": [
+          "SsoCallback"
+        ]
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "operationId": "SsoCallbackController_logout",
+        "parameters": [],
+        "responses": {
+          "303": {
+            "description": "Clear subsystem cookies and redirect to Core Hub logout"
+          }
+        },
+        "tags": [
+          "SsoCallback"
+        ]
+      }
+    },
     "/auth/callback": {
       "get": {
         "operationId": "SsoCallbackController_callback",
         "parameters": [
           {
-            "name": "access_token",
-            "required": true,
+            "name": "accept",
+            "required": false,
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "expires_in",
+            "required": false,
             "in": "query",
             "schema": {
               "type": "string"
@@ -519,19 +565,10 @@
             "required": false,
             "in": "query",
             "schema": {
-              "type": "string",
               "enum": [
                 "Bearer",
                 "bearer"
-              ]
-            }
-          },
-          {
-            "name": "expires_in",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "maxLength": 32,
+              ],
               "type": "string"
             }
           },
@@ -540,22 +577,30 @@
             "required": false,
             "in": "query",
             "schema": {
-              "maxLength": 512,
               "type": "string"
             }
           },
           {
-            "name": "accept",
+            "name": "access_token",
             "required": true,
-            "in": "header",
+            "in": "query",
             "schema": {
               "type": "string"
             }
           }
         ],
         "responses": {
-          "200": {
-            "description": ""
+          "302": {
+            "description": "Verified SSO session or restart of portal handoff"
+          },
+          "400": {
+            "description": "Invalid callback parameters"
+          },
+          "401": {
+            "description": "Invalid state or token; HTML retry page for state errors"
+          },
+          "403": {
+            "description": "Core role is not supported"
           }
         },
         "tags": [

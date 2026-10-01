@@ -1,12 +1,10 @@
 import { notFound } from "next/navigation";
-import { LOCAL_DEV_AUTH, getCapabilities, getMe, type ApiResult, type Me } from "./api";
+import { getCapabilities, getMe, type ApiResult, type Me } from "./api";
 
-export type Session = { me: Me; canCreate: boolean; localAuth: boolean };
+export type Session = { me: Me; canCreate: boolean };
 
 /** Core Hub SSO entry point — the subsystem has no sign-in form of its own (SEC-05). */
-export const ssoUrl = `${process.env.CORE_HUB_WEB_URL ?? "http://127.0.0.1:3100"}/api/sso/${encodeURIComponent(
-  process.env.SUBSYSTEM_ID ?? "csmju-department-activity-planner",
-)}`;
+export const ssoUrl = "/auth/login";
 
 /**
  * The signed-in user, or null when there is no valid Core Hub session (401).
@@ -19,10 +17,13 @@ export async function getSession(): Promise<Session | null> {
     throw new Error(me.message);
   }
   const capabilities = await getCapabilities();
+  if (!capabilities.ok) {
+    if (capabilities.status === 401) return null;
+    throw new Error(capabilities.message);
+  }
   return {
     me: me.data,
-    canCreate: capabilities.ok && capabilities.data.canCreateActivity,
-    localAuth: LOCAL_DEV_AUTH,
+    canCreate: capabilities.data.canCreateActivity,
   };
 }
 

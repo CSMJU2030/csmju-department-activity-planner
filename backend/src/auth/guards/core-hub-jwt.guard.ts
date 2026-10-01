@@ -1,5 +1,6 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { ConfigService } from '@nestjs/config';
 import { Request } from 'express';
 import { AppException } from '../../common/errors';
 import { AuthEventsLogger } from '../auth-events.logger';
@@ -8,7 +9,7 @@ import { CoreHubIdentity } from '../core-hub-identity';
 import { CoreHubTokenVerifier } from '../core-hub-token.verifier';
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 import { mapCoreRoleToSubsystemRole } from '../role-mapping';
-import { SSO_COOKIE_NAME, readCookie } from '../sso-session';
+import { sessionCookieName, readCookie } from '../sso-session';
 
 /**
  * Authentication guard (spec §12).
@@ -27,6 +28,7 @@ export class CoreHubJwtGuard implements CanActivate {
     private readonly reflector: Reflector,
     private readonly verifier: CoreHubTokenVerifier,
     private readonly authEvents: AuthEventsLogger,
+    private readonly config: ConfigService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -42,7 +44,7 @@ export class CoreHubJwtGuard implements CanActivate {
     const request = context.switchToHttp().getRequest<Request & { user?: CoreHubIdentity }>();
     const token =
       this.extractBearerToken(request.header('authorization')) ??
-      readCookie(request.header('cookie'), SSO_COOKIE_NAME);
+      readCookie(request.header('cookie'), sessionCookieName(this.config.get<string>('subsystemId', 'csmju-department-activity-planner')));
 
     if (!token) {
       this.authEvents.jwtRejected({
@@ -79,6 +81,7 @@ export class CoreHubJwtGuard implements CanActivate {
       email: payload.email ?? '',
       coreRole: payload.role as string,
       sessionId: payload.sid,
+      expiresAt: new Date(payload.exp! * 1000).toISOString(),
       subsystemRole,
     };
 

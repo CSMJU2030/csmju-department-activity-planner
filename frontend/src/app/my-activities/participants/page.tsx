@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
+import { SignedOut } from "@/components/layout/SignedOut";
 import { getOrganizedActivities } from "@/lib/api";
 import { getSession, unwrap } from "@/lib/session";
 
@@ -9,7 +9,7 @@ export const metadata = {
 
 export default async function MyActivitiesParticipantsPage() {
   const session = await getSession();
-  if (!session) redirect("/");
+  if (!session) return <SignedOut />;
 
   const activities = unwrap(await getOrganizedActivities());
 
@@ -18,7 +18,7 @@ export default async function MyActivitiesParticipantsPage() {
       {/* Header ส่วนหัวของหน้า */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-5">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">รายชื่อผู้สมัครกิจกรรมทั้งหมด</h1>
+          <h1 className="text-2xl font-bold">รายชื่อผู้สมัครกิจกรรมทั้งหมด</h1>
           <p className="muted text-sm mt-1">
             ตรวจสอบรายชื่อผู้ลงทะเบียนในทุกกิจกรรมที่คุณเป็นผู้จัด
           </p>

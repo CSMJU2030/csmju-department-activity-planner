@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { getSession } from "@/lib/session";
 import { CreateActivityForm } from "@/components/activities/CreateActivityForm";
+import { SignedOut } from "@/components/layout/SignedOut";
 
 export default async function CreateActivityPage() {
   const session = await getSession();
+  if (!session) return <SignedOut />;
   const user = session?.me ?? null;
   return <main className="dashboard-shell">
     <div className="space-y-4">

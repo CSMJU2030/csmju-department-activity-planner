@@ -5,7 +5,7 @@ Department Activity Planner — ระบบวางแผนและประ
 ย้ายมาจากโปรเจกต์ MIS (`activity` ตัวเดียวแบบ Next.js + Prisma ในตัว) โดยคงฟังก์ชันเดิมไว้ทั้งหมด
 แต่แยกโครงสร้างตามมาตรฐาน CSMJU2030: **frontend ห้ามต่อฐานข้อมูลตรง** (ARC-01) ข้อมูลและกฎธุรกิจอยู่ที่ backend NestJS
 
-มาตรฐานกลางอยู่ใน `standards/` (submodule ของ CSMJU2030/csmju2030-standards ตรึงที่ **v1.5.2**)
+มาตรฐานกลางอยู่ใน `standards/` (submodule ของ CSMJU2030/csmju2030-standards ตรึงที่ **v1.7.0**, auth contract 1.2)
 
 | ทำอะไรได้ | ใคร |
 |---|---|
@@ -19,45 +19,24 @@ Department Activity Planner — ระบบวางแผนและประ
 csmju-department-activity-planner/
 ├── frontend/          Next.js 16 (App Router) — พอร์ต 3002 ประตูเดียวของระบบย่อย
 ├── backend/           NestJS 11 + Prisma 7.9.1 — พอร์ต 4202 (ตรวจ JWT ผ่าน JWKS ด้วย jose)
-├── standards/         git submodule → csmju2030-standards@v1.5.2
+├── standards/         git submodule → csmju2030-standards@v1.7.0
 ├── subsystem.yaml     manifest ที่ CI และ conformance อ่าน (DevOps/PM เป็นเจ้าของ)
 ├── .standards-version
 └── docker-compose.yml PostgreSQL ของระบบย่อยเอง (พอร์ต 5434) + backend
 ```
 
-- `backend/src/auth/`, `backend/src/common/` คัดลอกจาก reference implementation `demo-student-subsystem` **โดยไม่แก้ตรรกะ**
-  (แก้เฉพาะตารางใน `role-mapping.ts` / `permissions.ts`)
+- `backend/src/auth/`, `backend/src/common/` รองรับ auth contract 1.2: RS256/JWKS, อายุ access token, `azp`, state-bound SSO และไม่ log URL callback ที่มี token
 - `backend/src/activities/` คือโดเมนของระบบนี้ (ย้ายมาจาก `activity.repository.ts` + Server Actions ของ MIS)
-- frontend ส่ง `/api/*` และ `/auth/callback` ต่อไปที่ backend (`next.config.ts`) — คุกกี้ SSO อยู่ origin เดียวกับหน้าเว็บ
+- frontend ส่ง `/api/*`, `/auth/login`, `/auth/callback`, `/auth/logout` ต่อไปที่ backend — คุกกี้ SSO อยู่ origin เดียวกับหน้าเว็บ
 - Server Actions ใน frontend ยังตรวจรูปแบบฟอร์มเหมือนเดิม แล้วส่งต่อไป backend พร้อมคุกกี้ของผู้ใช้
 
-## รันแบบไม่ต้องมี Core Hub (ชั่วคราว — เหมือน MIS เดิม)
+## รันในเครื่องและเชื่อม Core Hub
 
-ตอนที่ Core Hub ยังไม่เสร็จ ใช้ผู้ใช้ทดสอบที่เลือกด้วยค่าตั้งฝั่ง server ไม่มีหน้า login:
-
-```dotenv
-# backend/.env
-LOCAL_TEST_ROLE=HEAD        # HEAD = หัวหน้าห้อง (สร้างกิจกรรมได้) · STUDENT = นักศึกษาทั่วไป
-# frontend/.env.local
-LOCAL_DEV_AUTH=true
-```
-
-```bash
-docker compose up -d csmju-department-activity-planner-db   # หรือ Postgres ของคุณ + รัน init.sql
-pnpm --filter backend start:dev
-pnpm --filter frontend dev                                   # เปิด http://localhost:3002
-```
-
-สลับผู้ใช้โดยแก้ `LOCAL_TEST_ROLE` แล้ว restart backend (ไม่รับจากฟอร์ม/คุกกี้/header) โหมดนี้ **ไม่ใช่การยืนยันตัวตนจริง**:
-backend ปฏิเสธการสตาร์ทถ้าตั้งค่านี้ตอน `NODE_ENV=production` และ frontend ไม่สนใจ `LOCAL_DEV_AUTH` ตอน production
-
-เมื่อต่อ Core Hub: ลบค่าทั้งสองออก (ระบบกลับไปใช้ Core Hub อัตโนมัติ) แล้วลบโฟลเดอร์ `backend/src/dev/`
-กับส่วนที่อ้างถึงใน `app.module.ts` และ `configuration.ts`
-
-## รันในเครื่องคู่กับ Core Hub
-
-ต้องมี Core Hub รันอยู่ก่อน (API `http://localhost:3000`, หน้าเว็บ `http://127.0.0.1:3100`) และลงทะเบียนระบบนี้ใน Core Hub แล้ว
-(name `csmju-department-activity-planner`, callback `http://localhost:3002/auth/callback`)
+ใช้ Core Hub จริง `https://csmju2030.jowave.com` ไม่ต้องรัน Core Hub ในเครื่อง
+ลบ `LOCAL_TEST_ROLE` / `LOCAL_DEV_AUTH` จากไฟล์ env เดิมก่อนเริ่ม — ระบบไม่มีผู้ใช้จำลองหรือทางลัดตรวจ JWT แล้ว
+PL ต้องลงทะเบียน/อนุมัติ/เปิดใช้งานระบบใน Core ก่อน (name `csmju-department-activity-planner`)
+callback ปัจจุบัน `http://localhost:3002/auth/callback` ต้องตรงกับทะเบียนทุกตัวอักษร
+พอร์ต 3002 เป็นค่าของ checkout นี้; ขอพอร์ต 32xx จากทีมก่อนเปลี่ยนและแจ้ง Core ให้อัปเดต callback พร้อมกัน
 
 ```bash
 git submodule update --init standards/      # ให้ standards/ ตรงกับ .standards-version (ห้ามใส่ --remote)
@@ -80,10 +59,14 @@ Core Hub token ไม่มีข้อมูลว่าใครเป็น�
 ระบบนี้จึงกำหนดผ่าน **ค่าตั้งฝั่ง server**: ใส่ Core Hub user id (`sub`) ของหัวหน้าห้องใน `backend/.env`
 
 ```dotenv
-CLASS_HEAD_CORE_USER_IDS=<uuid-ของหัวหน้าห้อง>,<uuid-คนที่สอง>
+CLASS_HEAD_CORE_USER_IDS=<Core-sub-ของหัวหน้าห้อง>,<Core-sub-คนที่สอง>
 ```
 
 ต้องเป็นนักศึกษา (role `student`) ด้วย ค่านี้ไม่เคยรับจาก request/ฟอร์ม เปลี่ยนแล้วต้อง restart backend
+`sub` เป็น text ไม่จำเป็นต้องเป็น UUID และไม่ใช่อีเมล หากยังไม่มีรายชื่อให้เว้นว่าง (ไม่มีใครสร้างได้)
+รายชื่อหัวหน้าห้องนี้เป็นการตั้งค่าภายในระบบย่อยจนกว่า PM จะยืนยันแหล่งข้อมูลตำแหน่งจริง
+
+ดูรายการส่งต่อให้ PL/PM และวิธีตรวจเชื่อมต่อจริงใน [docs/core-integration.md](docs/core-integration.md)
 
 ## ทดสอบ
 

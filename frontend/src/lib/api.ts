@@ -10,21 +10,14 @@ import type { ActivityItem, ActivityStatus, ApplicationStatus } from "@/types/ac
 const BACKEND_URL = process.env.BACKEND_URL ?? "http://127.0.0.1:4202";
 
 /** Standard cookie name (auth-contract.md §5.1). */
-export const SSO_COOKIE = "core_hub_access_token";
+export const SSO_COOKIE = `${(process.env.SUBSYSTEM_ID ?? "csmju-department-activity-planner").replace(/-/g, "_")}_access_token`;
 
-/**
- * TEMPORARY: with LOCAL_DEV_AUTH=true no Core Hub cookie is needed; the backend
- * answers as its LOCAL_TEST_ROLE user instead. Ignored in production. Remove
- * together with the backend's src/dev once Core Hub login is connected.
- */
-export const LOCAL_DEV_AUTH =
-  process.env.LOCAL_DEV_AUTH === "true" && process.env.NODE_ENV !== "production";
 
 // TODO(API-01): generate these from backend/openapi.json once the backend
 // exports it (tech-stack.md §3).
 export type SubsystemRole = "STUDENT" | "ALUMNI" | "STAFF" | "ADMIN";
 
-export type Me = { id: string; email: string; coreRole: string; subsystemRole: SubsystemRole };
+export type Me = { id: string; email: string; coreRole: string; subsystemRole: SubsystemRole; session: { expiresAt: string } };
 
 export type ActivityRole = {
   id: string;
@@ -102,8 +95,8 @@ export async function call<T>(
   path: string,
   init: { method?: string; body?: unknown } = {},
 ): Promise<CallResult<T>> {
-  const token = LOCAL_DEV_AUTH ? undefined : (await cookies()).get(SSO_COOKIE)?.value;
-  if (!token && !LOCAL_DEV_AUTH) return { ok: false, status: 401, message: "ยังไม่ได้เข้าสู่ระบบ" };
+  const token = (await cookies()).get(SSO_COOKIE)?.value;
+  if (!token) return { ok: false, status: 401, message: "ยังไม่ได้เข้าสู่ระบบ" };
 
   let res: Response;
   try {
@@ -115,6 +108,7 @@ export async function call<T>(
       },
       body: init.body !== undefined ? JSON.stringify(init.body) : undefined,
       cache: "no-store",
+      signal: AbortSignal.timeout(10000),
     });
   } catch {
     return { ok: false, status: 503, message: "เชื่อมต่อ backend ของระบบย่อยไม่ได้" };

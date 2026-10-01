@@ -18,6 +18,7 @@ export class MeController {
       email: user.email,
       coreRole: user.coreRole,
       subsystemRole: user.subsystemRole,
+      session: { expiresAt: user.expiresAt },
     };
   }
 }
