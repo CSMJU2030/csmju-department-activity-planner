@@ -171,7 +171,7 @@ export class ActivitiesMeController {
   /** What the UI may offer this user (the API enforces it regardless). */
   @Get('activity-capabilities')
   @RequirePermissions(Permission.ACTIVITY_READ)
-  capabilities(@CurrentUser() user: CoreHubIdentity) {
-    return { canCreateActivity: this.activities.canCreateActivity(user) };
+  async capabilities(@CurrentUser() user: CoreHubIdentity) {
+    return { canCreateActivity: await this.activities.canCreateActivity(user) };
   }
 }

@@ -1,4 +1,3 @@
-import { ConfigService } from '@nestjs/config';
 import { CoreHubIdentity, SubsystemRole } from '../auth/core-hub-identity';
 import { PrismaService } from '../prisma/prisma.service';
 import { ActivitiesService } from './activities.service';
@@ -79,19 +78,20 @@ const baseActivity = (overrides: Row = {}): Row => ({
   ...overrides,
 });
 
-const service = (prisma: PrismaService, heads: string[] = [HEAD_ID]) =>
-  new ActivitiesService(prisma, {
-    get: (_key: string, fallback: unknown) => heads ?? fallback,
-  } as unknown as ConfigService);
+const service = (prisma: PrismaService, heads: string[] = [HEAD_ID]) => {
+  Object.assign(prisma, { activityHead: { findUnique: async ({ where }: { where: { coreUserId: string } }) =>
+    heads.includes(where.coreUserId) ? { active: true } : null } });
+  return new ActivitiesService(prisma);
+};
 
 describe('ActivitiesService business rules', () => {
   it('lets only a student class head create activities', async () => {
     const { prisma } = fakePrisma(baseActivity());
     const svc = service(prisma);
-    expect(svc.canCreateActivity(identity(HEAD_ID))).toBe(true);
-    expect(svc.canCreateActivity(identity('someone-else'))).toBe(false);
+    expect(await svc.canCreateActivity(identity(HEAD_ID))).toBe(true);
+    expect(await svc.canCreateActivity(identity('someone-else'))).toBe(false);
     // a faculty member who happens to share the id is still not a student
-    expect(svc.canCreateActivity(identity(HEAD_ID, SubsystemRole.STAFF))).toBe(false);
+    expect(await svc.canCreateActivity(identity(HEAD_ID, SubsystemRole.STAFF))).toBe(false);
     await expect(
       svc.create(identity('someone-else'), {
         title: 'x',

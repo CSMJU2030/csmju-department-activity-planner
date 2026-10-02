@@ -10,6 +10,8 @@ import { SubsystemRole } from './core-hub-identity';
  * service performs the ownership check against business data.
  */
 export enum Permission {
+  /** Appoint/revoke local Head permission; only Core admins. */
+  ACTIVITY_HEAD_MANAGE = 'activity:head:manage',
   /** Browse activities, roles and one's own participation. */
   ACTIVITY_READ = 'activity:read',
   /** Register, cancel, apply for a team role, evaluate. */

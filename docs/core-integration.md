@@ -26,7 +26,7 @@
 | callback deployment | URL HTTPS ของ frontend ที่ทีมจัดให้ + `/auth/callback` |
 | อนุมัติ | ทะเบียนต้อง APPROVED / ACTIVE และมี role mapping ที่ทีมยืนยัน |
 | role mapping ของโค้ด | student→STUDENT, alumni/guest→ALUMNI, staff/lecturer→STAFF, admin→ADMIN |
-| หัวหน้าห้อง | Core user `sub` จริงใน CLASS_HEAD_CORE_USER_IDS; ต้องมี role student ด้วย ไม่ใช้ email หรือ HEAD claim ที่แต่งขึ้น |
+| หัวหน้าห้อง | Core admin แต่งตั้ง Core user `sub` จริงที่หน้า `/admin/heads`; สิทธิ์ใน activity_heads และต้องมี role student ด้วย |
 | แหล่งตำแหน่งระยะยาว | PM ยืนยัน API/สัญญาก่อนแทนรายการค่าตั้งปัจจุบัน |
 | Manifest / conformance | `subsystem.yaml` เดิมยังมี placeholder และ standards_version เก่า ให้ DevOps/PM ตรวจและอนุมัติค่า endpoint/owners/roles |
 
@@ -38,7 +38,7 @@
 1. ตั้ง env จากตัวอย่าง โดยคง DATABASE_URL ของระบบย่อย; อย่าเผยแพร่ `.env`, รหัสผ่าน, token หรือ URL callback ที่มี token
 2. รีสตาร์ท backend และ frontend แล้วเปิด frontend ด้วย hostname ที่ตรงกับ callback ในทะเบียน
 3. ลงชื่อเข้าใช้จากเว็บระบบย่อยด้วยบัญชี Core จริง → กลับหน้าเดิม; ตรวจ `/api/v1/me` ได้ id จาก Core
-4. ทดสอบนักศึกษาทั่วไปสร้างไม่ได้, หัวหน้าห้องที่กำหนดสร้างได้, ผู้ใช้อื่นแก้กิจกรรมของคนอื่นไม่ได้
+4. ใช้ Core admin แต่งตั้ง Head จากหน้า `/admin/heads` แล้วทดสอบนักศึกษาทั่วไปสร้างไม่ได้, นักศึกษาที่แต่งตั้งสร้างได้, ผู้ใช้อื่นแก้กิจกรรมของคนอื่นไม่ได้
 5. ทดลอง session หมดเวลาและ logout; หาก callback state หมดเวลาให้ใช้ปุ่มเข้าสู่ระบบอีกครั้ง
 6. หลัง PM ปรับ manifest ให้รัน conformance กับ Core จริง และบันทึกผลก่อนประกาศพร้อมใช้งาน
 

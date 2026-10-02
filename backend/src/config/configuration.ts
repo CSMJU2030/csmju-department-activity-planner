@@ -8,10 +8,6 @@ export interface AppConfig {
   port: number;
   subsystemId: string;
   subsystemName: string;
-  activity: {
-    /** Core Hub user ids (`sub`) of the student class heads who may create activities. */
-    classHeadCoreUserIds: string[];
-  };
   coreHub: {
     url: string;
     webUrl: string;
@@ -42,14 +38,6 @@ export default (): AppConfig => {
     port: num(process.env.PORT, 4202),
     subsystemId: process.env.SUBSYSTEM_ID ?? 'csmju-department-activity-planner',
     subsystemName: process.env.SUBSYSTEM_NAME ?? 'Department Activity Planner',
-    activity: {
-      classHeadCoreUserIds: [
-        ...(process.env.CLASS_HEAD_CORE_USER_IDS ?? '')
-          .split(',')
-          .map((id) => id.trim())
-          .filter((id) => id.length > 0),
-      ],
-    },
     coreHub: {
       url: coreHubUrl,
       webUrl: process.env.CORE_HUB_WEB_URL ?? coreHubUrl,

@@ -621,6 +621,72 @@
           "Health"
         ]
       }
+    },
+    "/api/v1/admin/activity-heads": {
+      "get": {
+        "operationId": "HeadsController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Heads"
+        ]
+      },
+      "post": {
+        "operationId": "HeadsController_grant",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GrantHeadDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Heads"
+        ]
+      }
+    },
+    "/api/v1/admin/activity-heads/{coreUserId}": {
+      "delete": {
+        "operationId": "HeadsController_revoke",
+        "parameters": [
+          {
+            "name": "coreUserId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Heads"
+        ]
+      }
     }
   },
   "info": {
@@ -809,6 +875,10 @@
           "liked",
           "improvement"
         ]
+      },
+      "GrantHeadDto": {
+        "type": "object",
+        "properties": {}
       }
     }
   }

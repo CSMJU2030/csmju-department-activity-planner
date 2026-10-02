@@ -193,11 +193,22 @@ class Table {
     this.rows = this.rows.filter((candidate) => candidate !== row);
     return row;
   }
+
+  async upsert({ where, create, update }: { where: Row; create: Row; update: Row }): Promise<Row> {
+    return this.findByWhere(where) ? this.update({ where, data: update }) : this.create({ data: create });
+  }
+
+  async updateMany({ where, data }: { where: Row; data: Row }): Promise<{ count: number }> {
+    const rows = this.rows.filter(row => matches(row, where));
+    rows.forEach(row => Object.assign(row, data));
+    return { count: rows.length };
+  }
 }
 
 /** Only the tables the SSO/auth e2e suite touches. */
 export class InMemoryPrisma {
-  activity = new Table([], [], () => ({ status: 'OPEN' }));
+  activity = new Table([], [], () => ({ status: 'OPEN', _count: { registrations: 0 } }));
+  activityHead = new Table(['coreUserId'], [], () => ({ active: true, revokedBy: null, revokedAt: null }));
 
   async $connect(): Promise<void> {}
   async $disconnect(): Promise<void> {}
@@ -206,5 +217,6 @@ export class InMemoryPrisma {
 
   reset(): void {
     this.activity.rows = [];
+    this.activityHead.rows = [];
   }
 }

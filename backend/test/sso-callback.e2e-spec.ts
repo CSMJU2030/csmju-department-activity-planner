@@ -132,6 +132,34 @@ describe('Core Hub SSO contract 1.2 (e2e)', () => {
     await request(app.getHttpServer()).get('/api/v1/me').set('Cookie', `${SESSION}=%E0%A4%A`).expect(401);
   });
 
+  it('allows only Core admins to grant/revoke Head, and immediately changes student capabilities', async () => {
+    const admin = await signCoreHubToken(key, { sub: 'admin-001', role: 'admin', azp: ID });
+    const staff = await signCoreHubToken(key, { sub: 'staff-001', role: 'staff', azp: ID });
+    const path = '/api/v1/admin/activity-heads';
+    for (const caller of [token, staff]) {
+      await request(app.getHttpServer()).post(path).set('Authorization', `Bearer ${caller}`).send({ coreUserId: 'user-002' }).expect(403);
+      await request(app.getHttpServer()).get(path).set('Authorization', `Bearer ${caller}`).expect(403);
+      await request(app.getHttpServer()).delete(`${path}/user-002`).set('Authorization', `Bearer ${caller}`).expect(403);
+    }
+    await request(app.getHttpServer()).post(path).set('Authorization', `Bearer ${admin}`).send({ coreUserId: 'user-002', role: 'admin' }).expect(400);
+    await request(app.getHttpServer()).post(path).set('Authorization', `Bearer ${admin}`).send({ coreUserId: 'x'.repeat(65) }).expect(400);
+    const grant = await request(app.getHttpServer()).post(path).set('Authorization', `Bearer ${admin}`).send({ coreUserId: 'user-002' }).expect(201);
+    expect(grant.body.data).toMatchObject({ grantedBy: 'admin-001', active: true });
+    let caps = await request(app.getHttpServer()).get('/api/v1/me/activity-capabilities').set('Authorization', `Bearer ${token}`).expect(200);
+    expect(caps.body.data.canCreateActivity).toBe(true);
+    const created = await request(app.getHttpServer()).post('/api/v1/activities').set('Authorization', `Bearer ${token}`)
+      .send({ title: 'Head activity', category: 'workshop', maxParticipants: 1,
+        startAt: '2026-10-10T09:00:00+07:00', endAt: '2026-10-10T12:00:00+07:00' }).expect(201);
+    expect(created.body.data.createdBy).toBe('user-002');
+    await request(app.getHttpServer()).delete(`${path}/user-002`).set('Authorization', `Bearer ${admin}`).expect(200);
+    caps = await request(app.getHttpServer()).get('/api/v1/me/activity-capabilities').set('Authorization', `Bearer ${token}`).expect(200);
+    expect(caps.body.data.canCreateActivity).toBe(false);
+    const list = await request(app.getHttpServer()).get(path).set('Authorization', `Bearer ${admin}`).expect(200);
+    expect(list.body.data[0]).toMatchObject({ active: false, revokedBy: 'admin-001' });
+    await request(app.getHttpServer()).post('/api/v1/activities').set('Authorization', `Bearer ${token}`).send({ title: 'x', category: 'workshop', maxParticipants: 1,
+      startAt: '2026-10-10T09:00:00+07:00', endAt: '2026-10-10T12:00:00+07:00' }).expect(403);
+  });
+
   it('clears both cookies and sends logout to Core', async () => {
     const res = await request(app.getHttpServer()).post('/auth/logout').expect(303);
     expect(res.headers.location).toBe(`${hub.url}/logout`);

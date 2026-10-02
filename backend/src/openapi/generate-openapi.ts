@@ -12,6 +12,8 @@ import { CoreHubTokenVerifier } from '../auth/core-hub-token.verifier';
 import { MeController } from '../auth/me.controller';
 import { SsoCallbackController } from '../auth/sso-callback.controller';
 import { HealthController } from '../health/health.controller';
+import { HeadsController } from '../activities/heads.controller';
+import { PrismaService } from '../prisma/prisma.service';
 
 /**
  * Writes backend/openapi.json (tech-stack.md §3, rule API-01).
@@ -31,12 +33,14 @@ const stub = (provide: InjectionToken) => ({ provide, useValue: {} });
     MeController,
     SsoCallbackController,
     HealthController,
+    HeadsController,
   ],
   providers: [
     stub(ActivitiesService),
     stub(AuthEventsLogger),
     stub(CoreHubTokenVerifier),
     stub(ConfigService),
+    stub(PrismaService),
   ],
 })
 class OpenApiModule {}

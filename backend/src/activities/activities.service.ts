@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import type { Activity, ActivityStatus, Prisma } from '../../generated/prisma/client';
 import { CoreHubIdentity, SubsystemRole } from '../auth/core-hub-identity';
 import { AppException } from '../common/errors';
@@ -50,16 +49,16 @@ const activityNotFound = () => AppException.notFound('ไม่พบกิจ�
 export class ActivitiesService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly config: ConfigService,
   ) {}
 
   /**
    * Only a student who is a class head may create activities. Class heads are
-   * server configuration (CLASS_HEAD_CORE_USER_IDS), never a request value.
+   * local database permissions granted by a verified Core admin.
    */
-  canCreateActivity(user: CoreHubIdentity): boolean {
-    const heads = this.config.get<string[]>('activity.classHeadCoreUserIds', []);
-    return user.subsystemRole === SubsystemRole.STUDENT && heads.includes(user.id);
+  async canCreateActivity(user: CoreHubIdentity): Promise<boolean> {
+    if (user.subsystemRole !== SubsystemRole.STUDENT) return false;
+    const head = await this.prisma.activityHead.findUnique({ where: { coreUserId: user.id } });
+    return head?.active === true;
   }
 
   /**
@@ -197,7 +196,7 @@ export class ActivitiesService {
   }
 
   async create(user: CoreHubIdentity, dto: CreateActivityDto): Promise<ActivityItem> {
-    if (!this.canCreateActivity(user)) {
+    if (!(await this.canCreateActivity(user))) {
       throw AppException.forbidden('เฉพาะนักศึกษาที่เป็นหัวหน้าห้องเท่านั้นที่สร้างกิจกรรมได้');
     }
     const startAt = new Date(dto.startAt);
