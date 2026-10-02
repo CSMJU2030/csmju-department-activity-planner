@@ -34,7 +34,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full flex flex-col">
         <a href="#main-content" className="skip-link">ข้ามไปเนื้อหา</a>
-        <Navigation canCreate={session?.canCreate ?? false} signedIn={session !== null} />
+        <Navigation canCreate={session?.canCreate ?? false} signedIn={session !== null} isAdmin={session?.me.coreRole === "admin"} />
         <CoreSession signedIn={session !== null} available={available} />
         <div id="main-content" className="flex-1" tabIndex={-1}>{children}</div>
         <footer className="site-footer">CSMJU2030 · Activity Planning &amp; Improvement System<br />สาขาวิทยาการคอมพิวเตอร์ คณะวิทยาศาสตร์ มหาวิทยาลัยแม่โจ้</footer>

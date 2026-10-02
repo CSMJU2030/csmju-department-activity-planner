@@ -36,6 +36,17 @@ enum ApplicationStatus {
   REJECTED
 }
 
+// Local permission only: no copied Core user profile or permanent Core role.
+model ActivityHead {
+  coreUserId String @id @map("core_user_id") @db.VarChar(64)
+  active Boolean @default(true)
+  grantedBy String @map("granted_by") @db.VarChar(64)
+  grantedAt DateTime @default(now()) @map("granted_at") @db.Timestamptz(3)
+  revokedBy String? @map("revoked_by") @db.VarChar(64)
+  revokedAt DateTime? @map("revoked_at") @db.Timestamptz(3)
+  @@map("activity_heads")
+}
+
 model Activity {
   id              String            @id @default(uuid())
   title           String            @db.VarChar(150)

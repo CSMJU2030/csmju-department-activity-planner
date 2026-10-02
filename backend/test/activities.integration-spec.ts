@@ -12,10 +12,10 @@
  *
  * It only ever deletes the exact rows it created.
  */
-import { ConfigService } from '@nestjs/config';
 import { randomUUID } from 'crypto';
 import { CoreHubIdentity, SubsystemRole } from '../src/auth/core-hub-identity';
 import { ActivitiesService } from '../src/activities/activities.service';
+import { HeadsController } from '../src/activities/heads.controller';
 import { PrismaService } from '../src/prisma/prisma.service';
 
 const url = process.env.DATABASE_URL;
@@ -54,18 +54,37 @@ suite('ActivitiesService against PostgreSQL', () => {
   beforeAll(async () => {
     prisma = new PrismaService();
     await prisma.$connect();
-    const config = { get: () => [head.id] } as unknown as ConfigService;
-    service = new ActivitiesService(prisma, config);
+    await prisma.activityHead.create({ data: { coreUserId: head.id, grantedBy: `${prefix}-admin` } });
+    service = new ActivitiesService(prisma);
   });
 
   afterAll(async () => {
     // Only delete exact records created by this run, never user-created rows.
     await prisma.activity.deleteMany({ where: { id: { in: ids }, createdBy: head.id } });
+    await prisma.activityHead.deleteMany({ where: { coreUserId: head.id } });
     await prisma.$disconnect();
   });
 
   it('only class heads create activities', async () => {
     await expect(service.create(student('a'), input)).rejects.toMatchObject({ status: 403 });
+  });
+
+  it('persists admin grants/revocation and preserves ownership of existing activities', async () => {
+    const admin = { ...head, id: `${prefix}-admin`, coreRole: 'admin', subsystemRole: SubsystemRole.ADMIN };
+    const controller = new HeadsController(prisma);
+    expect(() => controller.grant(student('a'), { coreUserId: head.id })).toThrow();
+    const existing = await activity();
+    try {
+      await controller.revoke(admin, head.id);
+      expect(await service.canCreateActivity(head)).toBe(false);
+      await expect(service.create(head, input)).rejects.toMatchObject({ status: 403 });
+      await service.update(existing.id, head, { title: 'Still owned by the organiser' });
+      const stored = await prisma.activityHead.findUniqueOrThrow({ where: { coreUserId: head.id } });
+      expect(stored).toMatchObject({ active: false, revokedBy: admin.id });
+    } finally {
+      await controller.grant(admin, { coreUserId: head.id });
+    }
+    expect(await service.canCreateActivity(head)).toBe(true);
   });
 
   it('stores the schedule in UTC', async () => {
@@ -101,7 +120,8 @@ suite('ActivitiesService against PostgreSQL', () => {
   it('team roles: unique names, capacity, one application per person, decisions are final', async () => {
     const a = await activity(5);
     const role = await service.createRole(a.id, head, { roleName: 'Host', maxMembers: 1 });
-    await expect(service.createRole(a.id, head, { roleName: ' host ', maxMembers: 1 })).rejects.toMatchObject({ status: 409 });
+    // Inputs passed directly to the service already went through DTO Trim in HTTP requests.
+    await expect(service.createRole(a.id, head, { roleName: 'host', maxMembers: 1 })).rejects.toMatchObject({ status: 409 });
     await expect(service.createRole(a.id, student('x'), { roleName: 'Other', maxMembers: 1 })).rejects.toMatchObject({ status: 403 });
 
     const first = await service.applyForRole(a.id, role.id, student('m1'));

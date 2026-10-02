@@ -40,7 +40,6 @@ services:
       CORE_HUB_AUDIENCE: ${CORE_HUB_AUDIENCE:-csmju2030}
       SUBSYSTEM_ID: ${SUBSYSTEM_ID:-csmju-department-activity-planner}
       SUBSYSTEM_NAME: ${SUBSYSTEM_NAME:-Department Activity Planner}
-      CLASS_HEAD_CORE_USER_IDS: ${CLASS_HEAD_CORE_USER_IDS:-}
     ports:
       - '4202:4202'
     extra_hosts:
