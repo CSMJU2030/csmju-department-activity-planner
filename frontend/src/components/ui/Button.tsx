@@ -12,12 +12,12 @@ export const Button: React.FC<ButtonProps> = ({
   ...props
 }) => {
   const baseStyles =
-    "min-h-11 px-4 py-2 text-sm leading-[1.6] rounded-xl font-medium transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed";
+    "min-h-11 px-4 py-2.5 text-label-md rounded-lg font-semibold transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed";
 
   const variants = {
-    primary: "bg-primary text-white hover:opacity-90",
-    secondary: "bg-secondary text-primary hover:bg-secondary/80",
-    outline: "border border-neutral text-neutral hover:bg-tertiary",
+    primary: "btn-gradient text-on-primary shadow-md hover:opacity-90",
+    secondary: "bg-primary-container/10 text-primary-container hover:bg-primary-container/20",
+    outline: "border border-outline-variant text-on-surface-variant hover:bg-surface-variant/50",
   };
 
   return (

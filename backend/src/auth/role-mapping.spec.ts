@@ -1,7 +1,14 @@
 import { SubsystemRole } from './core-hub-identity';
-import { mapCoreRoleToSubsystemRole } from './role-mapping';
+import { mapCoreRoleToSubsystemRole, mapVerifiedIdentityToSubsystemRole } from './role-mapping';
 
 describe('Core role -> subsystem role mapping (spec §14)', () => {
+  it('grants local ADMIN only to the configured verified identity', () => {
+    expect(mapVerifiedIdentityToSubsystemRole('staff', 'selected', ['selected'])).toBe(SubsystemRole.ADMIN);
+    expect(mapVerifiedIdentityToSubsystemRole('staff', 'other', ['selected'])).toBe(SubsystemRole.STAFF);
+    expect(mapVerifiedIdentityToSubsystemRole('staff', 'selected', [])).toBe(SubsystemRole.STAFF);
+    expect(mapVerifiedIdentityToSubsystemRole(undefined, 'selected', ['selected'])).toBeNull();
+    expect(mapVerifiedIdentityToSubsystemRole('unknown', 'selected', ['selected'])).toBeNull();
+  });
   it.each([
     ['student', SubsystemRole.STUDENT],
     ['alumni', SubsystemRole.ALUMNI],

@@ -8,7 +8,7 @@ import { TokenRejectionReason, TokenVerificationError } from '../auth.errors';
 import { CoreHubIdentity } from '../core-hub-identity';
 import { CoreHubTokenVerifier } from '../core-hub-token.verifier';
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
-import { mapCoreRoleToSubsystemRole } from '../role-mapping';
+import { mapVerifiedIdentityToSubsystemRole } from '../role-mapping';
 import { sessionCookieName, readCookie } from '../sso-session';
 
 /**
@@ -70,7 +70,8 @@ export class CoreHubJwtGuard implements CanActivate {
 
     // Core role -> subsystem role. Authentication succeeded, so a role the
     // subsystem does not recognise is an AUTHORIZATION failure (403).
-    const subsystemRole = mapCoreRoleToSubsystemRole(payload.role);
+    const subsystemRole = mapVerifiedIdentityToSubsystemRole(payload.role, payload.sub,
+      this.config.get<string[]>('localAdminCoreUserIds', []));
     if (!subsystemRole) {
       this.authEvents.roleMappingFailed({ sub: payload.sub, coreRole: payload.role });
       throw AppException.forbidden('Your Core Hub role has no access to this subsystem');

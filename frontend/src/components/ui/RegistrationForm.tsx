@@ -23,12 +23,12 @@ export function RegistrationForm({ activityId, mode, disabled = false }: {
   }, "");
 
   return (
-    <form action={action} className="space-y-2 text-sm leading-[1.6]">
+    <form action={action} className="space-y-2 text-body-md">
       <Button type="submit" variant={mode === "cancel" ? "outline" : "primary"}
         disabled={disabled || pending}>
         {pending ? "กำลังดำเนินการ…" : mode === "cancel" ? "ยกเลิกการลงทะเบียน" : "ลงทะเบียนเข้าร่วมกิจกรรม"}
       </Button>
-      <p role="status" aria-live="polite" className="text-neutral">{message}</p>
+      <p role="status" aria-live="polite" className="text-on-surface">{message}</p>
     </form>
   );
 }

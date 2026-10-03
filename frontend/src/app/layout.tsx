@@ -1,20 +1,22 @@
 import { Navigation } from "@/components/layout/Navigation";
 import { CoreSession } from "@/components/layout/CoreSession";
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Plus_Jakarta_Sans, Noto_Sans_Thai } from "next/font/google";
 import "./globals.css";
 import { getSession } from "@/lib/session";
 
 export const dynamic = "force-dynamic";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const jakarta = Plus_Jakarta_Sans({
+  variable: "--font-jakarta",
   subsets: ["latin"],
+  weight: ["400", "600", "700", "800"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const notoSansThai = Noto_Sans_Thai({
+  variable: "--font-noto-thai",
+  subsets: ["latin", "thai"],
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -30,11 +32,11 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="th"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${jakarta.variable} ${notoSansThai.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <a href="#main-content" className="skip-link">ข้ามไปเนื้อหา</a>
-        <Navigation canCreate={session?.canCreate ?? false} signedIn={session !== null} isAdmin={session?.me.coreRole === "admin"} />
+        <Navigation canCreate={session?.canCreate ?? false} signedIn={session !== null} isAdmin={session?.me.subsystemRole === "ADMIN"} user={session ? { email: session.me.email, subsystemRole: session.me.subsystemRole } : undefined} />
         <CoreSession signedIn={session !== null} available={available} />
         <div id="main-content" className="flex-1" tabIndex={-1}>{children}</div>
         <footer className="site-footer">CSMJU2030 · Activity Planning &amp; Improvement System<br />สาขาวิทยาการคอมพิวเตอร์ คณะวิทยาศาสตร์ มหาวิทยาลัยแม่โจ้</footer>

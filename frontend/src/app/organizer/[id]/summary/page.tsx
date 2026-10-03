@@ -32,7 +32,7 @@ export default async function ActivitySummaryPage({
         <h1 className="text-2xl font-bold text-primary mt-2">
           Activity Improvement History
         </h1>
-        <p className="text-sm text-neutral">
+        <p className="text-sm text-on-surface">
           สรุปบทเรียนและผลประเมิน: <strong>{activity.title}</strong>
         </p>
       </div>
@@ -40,16 +40,16 @@ export default async function ActivitySummaryPage({
       {/* สถิติหลัก */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="text-center">
-          <span className="text-sm text-neutral">คะแนนประเมินเฉลี่ย</span>
+          <span className="text-sm text-on-surface">คะแนนประเมินเฉลี่ย</span>
           <div className="text-3xl font-bold text-primary mt-1">{avgRating} / 5</div>
         </Card>
         <Card className="text-center">
-          <span className="text-sm text-neutral">จำนวนผู้ประเมิน</span>
-          <div className="text-3xl font-bold text-neutral mt-1">{evals.length} คน</div>
+          <span className="text-sm text-on-surface">จำนวนผู้ประเมิน</span>
+          <div className="text-3xl font-bold text-on-surface mt-1">{evals.length} คน</div>
         </Card>
         <Card className="text-center">
-          <span className="text-sm text-neutral">จำนวนผู้เข้าร่วมทั้งหมด</span>
-          <div className="text-3xl font-bold text-neutral mt-1">{activity.currentParticipants} คน</div>
+          <span className="text-sm text-on-surface">จำนวนผู้เข้าร่วมทั้งหมด</span>
+          <div className="text-3xl font-bold text-on-surface mt-1">{activity.currentParticipants} คน</div>
         </Card>
       </div>
 
@@ -59,7 +59,7 @@ export default async function ActivitySummaryPage({
           <div className="flex items-center gap-2">
             <Badge variant="info">จุดเด่น / สิ่งที่ผู้เข้าร่วมชอบ</Badge>
           </div>
-          <ul className="space-y-2 text-sm text-neutral divide-y divide-gray-100">
+          <ul className="space-y-2 text-sm text-on-surface divide-y divide-gray-100">
             {evals.map((e) => (
               <li key={e.id} className="pt-2">
                 &bull; {e.liked || "-"}
@@ -72,9 +72,9 @@ export default async function ActivitySummaryPage({
           <div className="flex items-center gap-2">
             <Badge variant="neutral">ข้อเสนอแนะเพื่อปรับปรุงครั้งถัดไป</Badge>
           </div>
-          <ul className="space-y-2 text-sm text-neutral divide-y divide-gray-100">
+          <ul className="space-y-2 text-sm text-on-surface divide-y divide-gray-100">
             {evals.map((e) => (
-              <li key={e.id} className="pt-2 text-red-600">
+              <li key={e.id} className="pt-2 text-on-error-container">
                 &bull; {e.improvement || "-"}
               </li>
             ))}

@@ -35,3 +35,10 @@ export function mapCoreRoleToSubsystemRole(coreRole: string | undefined): Subsys
   }
   return CORE_ROLE_TO_SUBSYSTEM_ROLE[coreRole.trim().toLowerCase()] ?? null;
 }
+
+/** Called only after Core token verification; overrides apply to recognised Core roles. */
+export function mapVerifiedIdentityToSubsystemRole(coreRole: string | undefined, coreUserId: string, localAdminIds: readonly string[]): SubsystemRole | null {
+  const role = mapCoreRoleToSubsystemRole(coreRole);
+  if (!role) return null;
+  return localAdminIds.includes(coreUserId) ? SubsystemRole.ADMIN : role;
+}

@@ -1,5 +1,6 @@
 import { INestApplication, RequestMethod, ValidationPipe } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
+import { ConfigService } from '@nestjs/config';
 import request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { sessionCookieName, stateCookieName } from '../src/auth/sso-session';
@@ -132,7 +133,27 @@ describe('Core Hub SSO contract 1.2 (e2e)', () => {
     await request(app.getHttpServer()).get('/api/v1/me').set('Cookie', `${SESSION}=%E0%A4%A`).expect(401);
   });
 
-  it('allows only Core admins to grant/revoke Head, and immediately changes student capabilities', async () => {
+  it('maps a configured verified staff identity to local ADMIN and allows Head management', async () => {
+    const config = app.get(ConfigService);
+    const previous = config.get<string[]>('localAdminCoreUserIds', []);
+    config.set('localAdminCoreUserIds', ['local-admin-staff']);
+    try {
+      const localAdmin = await signCoreHubToken(key, { sub: 'local-admin-staff', role: 'staff', azp: ID });
+      const me = await request(app.getHttpServer()).get('/api/v1/me').set('Authorization', `Bearer ${localAdmin}`).expect(200);
+      expect(me.body.data).toMatchObject({ coreRole: 'staff', subsystemRole: 'ADMIN' });
+      const path = '/api/v1/admin/activity-heads';
+      await request(app.getHttpServer()).post(path).set('Authorization', `Bearer ${localAdmin}`).send({ coreUserId: 'local-head' }).expect(201);
+      await request(app.getHttpServer()).delete(`${path}/local-head`).set('Authorization', `Bearer ${localAdmin}`).expect(200);
+      config.set('localAdminCoreUserIds', []);
+      await request(app.getHttpServer()).get(path).set('Authorization', `Bearer ${localAdmin}`).expect(403);
+      const tampered = tamperPayload(token, { sub: 'local-admin-staff' });
+      await request(app.getHttpServer()).get(path).set('Authorization', `Bearer ${tampered}`).expect(401);
+    } finally {
+      config.set('localAdminCoreUserIds', previous);
+    }
+  });
+
+  it('allows Core admins to grant/revoke Head, and immediately changes student capabilities', async () => {
     const admin = await signCoreHubToken(key, { sub: 'admin-001', role: 'admin', azp: ID });
     const staff = await signCoreHubToken(key, { sub: 'staff-001', role: 'staff', azp: ID });
     const path = '/api/v1/admin/activity-heads';

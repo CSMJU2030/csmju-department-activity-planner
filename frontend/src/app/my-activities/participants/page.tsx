@@ -51,7 +51,7 @@ export default async function MyActivitiesParticipantsPage() {
                 <div>
                   <div className="flex items-center gap-2">
                     <h2 className="text-lg font-bold text-primary">{activity.title}</h2>
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-surface-muted font-medium">
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-surface-variant font-medium">
                       {activity.category}
                     </span>
                   </div>
@@ -62,13 +62,13 @@ export default async function MyActivitiesParticipantsPage() {
                 <div className="flex items-center gap-2">
                   <Link
                     href={`/organizer/${activity.id}/manage`}
-                    className="secondary-link text-xs py-1 px-3"
+                    className="secondary-link text-label-md py-1 px-3"
                   >
                     จัดการกิจกรรม
                   </Link>
                   <Link
                     href={`/activities/${activity.id}`}
-                    className="primary-link text-xs py-1 px-3"
+                    className="primary-link text-label-md py-1 px-3"
                   >
                     ดูหน้ากิจกรรม
                   </Link>
@@ -84,7 +84,7 @@ export default async function MyActivitiesParticipantsPage() {
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-sm">
                     <thead>
-                      <tr className="border-b border-border text-muted text-xs uppercase tracking-wider">
+                      <tr className="border-b border-border text-muted text-label-md">
                         <th className="py-2.5 px-3 w-16">ลำดับ</th>
                         <th className="py-2.5 px-3">รหัสผู้ใช้งาน (User ID)</th>
                         <th className="py-2.5 px-3 text-right">วันเวลาที่ลงทะเบียน</th>
@@ -92,7 +92,7 @@ export default async function MyActivitiesParticipantsPage() {
                     </thead>
                     <tbody className="divide-y divide-border">
                       {activity.registrations.map((reg, index) => (
-                        <tr key={reg.id} className="hover:bg-surface-muted/50 transition-colors">
+                        <tr key={reg.id} className="hover:bg-surface-variant/50 transition-colors">
                           <td className="py-3 px-3 text-muted">{index + 1}</td>
                           <td className="py-3 px-3 font-mono font-medium">{reg.coreUserId}</td>
                           <td className="py-3 px-3 text-right text-muted">
