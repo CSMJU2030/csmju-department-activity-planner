@@ -20,7 +20,7 @@ export function ActionForm({ action, children, label, variant = "primary", disab
   }, "");
 
   return (
-    <form action={submit} className="space-y-3 text-sm leading-[1.6] text-neutral">
+    <form action={submit} className="space-y-3 text-body-md text-on-surface">
       <fieldset disabled={pending || disabled} className="space-y-3">
         {children}
         <Button type="submit" variant={variant} disabled={pending || disabled}>

@@ -49,7 +49,7 @@ export default async function EditActivityPage({
           <h1 className="text-xl font-bold text-primary">
             แก้ไขข้อมูลกิจกรรม
           </h1>
-          <p className="text-sm text-neutral">
+          <p className="text-sm text-on-surface">
             ปรับปรุงรายละเอียด กำหนดการ หรือจำนวนที่นั่งที่เปิดรับ
           </p>
         </div>

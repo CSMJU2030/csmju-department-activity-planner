@@ -40,7 +40,7 @@ export default async function OrganizerManagePage({
           <h1 className="text-2xl font-bold text-primary mt-2">
             จัดการกิจกรรม: {activity.title}
           </h1>
-          <p className="text-sm text-neutral">
+          <p className="text-sm text-on-surface">
             พื้นที่สำหรับผู้จัดกิจกรรมคัดเลือกทีมงานและควบคุมสถานะกิจกรรม
           </p>
         </div>
@@ -48,7 +48,7 @@ export default async function OrganizerManagePage({
         <div className="flex flex-wrap items-center gap-2">
           <Link
             href={`/activities/${activity.id}/edit`}
-            className="text-sm bg-white text-neutral border border-gray-300 px-3 py-1.5 rounded font-medium hover:bg-gray-50 transition-colors"
+            className="text-sm bg-surface-container-lowest text-on-surface border border-outline-variant px-3 py-1.5 rounded font-medium hover:bg-surface transition-colors"
           >
             แก้ไขกิจกรรม
           </Link>
@@ -63,7 +63,7 @@ export default async function OrganizerManagePage({
       </div>
 
       {/* บล็อกควบคุมสถานะกิจกรรม */}
-      <Card className="space-y-3 bg-tertiary">
+      <Card className="space-y-3 bg-surface">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
           <div>
             <span className="text-sm text-gray-500 block">
@@ -86,7 +86,7 @@ export default async function OrganizerManagePage({
               id="activity-status"
               name="status"
               defaultValue={activity.status}
-              className="text-sm px-3 py-1.5 rounded border border-gray-300 bg-white text-neutral focus:outline-none"
+              className="text-sm px-3 py-1.5 rounded border border-outline-variant bg-surface-container-lowest text-on-surface focus:outline-none"
             >
               <option value="OPEN">OPEN (เปิดรับสมัคร)</option>
               <option value="FULL">FULL (ที่นั่งเต็ม)</option>
@@ -115,10 +115,10 @@ export default async function OrganizerManagePage({
             }}
           >
             <div className="form-two-columns">
-              <label className="space-y-1">ชื่อตำแหน่ง *<input name="roleName" required maxLength={100} placeholder="เช่น พิธีกร / ผู้ช่วยวิทยากร" className="w-full px-3 py-2 text-sm rounded-md border border-gray-300" /></label>
-              <label className="space-y-1">จำนวนที่รับ *<input name="maxMembers" required min={1} max={999} type="number" defaultValue={1} className="w-full px-3 py-2 text-sm rounded-md border border-gray-300" /></label>
+              <label className="space-y-1">ชื่อตำแหน่ง *<input name="roleName" required maxLength={100} placeholder="เช่น พิธีกร / ผู้ช่วยวิทยากร" className="w-full px-3 py-2 text-sm rounded-lg border border-outline-variant" /></label>
+              <label className="space-y-1">จำนวนที่รับ *<input name="maxMembers" required min={1} max={999} type="number" defaultValue={1} className="w-full px-3 py-2 text-sm rounded-lg border border-outline-variant" /></label>
             </div>
-            <label className="space-y-1 block">หน้าที่และรายละเอียด<textarea name="roleDescription" maxLength={500} rows={2} placeholder="อธิบายหน้าที่ของทีมงานตำแหน่งนี้" className="w-full px-3 py-2 text-sm rounded-md border border-gray-300" /></label>
+            <label className="space-y-1 block">หน้าที่และรายละเอียด<textarea name="roleDescription" maxLength={500} rows={2} placeholder="อธิบายหน้าที่ของทีมงานตำแหน่งนี้" className="w-full px-3 py-2 text-sm rounded-lg border border-outline-variant" /></label>
           </ActionForm>
         </Card>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -131,12 +131,12 @@ export default async function OrganizerManagePage({
             return (
               <Card key={role.id} className="space-y-1">
                 <div className="flex justify-between items-center">
-                  <span className="font-bold text-neutral text-sm">
+                  <span className="font-bold text-on-surface text-sm">
                     {role.roleName}
                   </span>
                   <span
                     className={`text-sm font-semibold ${
-                      isRoleFull ? "text-green-700" : "text-primary"
+                      isRoleFull ? "text-emerald-700" : "text-primary"
                     }`}
                   >
                     {acceptedMembers.length} / {role.maxMembers} คน
@@ -156,7 +156,7 @@ export default async function OrganizerManagePage({
         </h2>
 
         {applications.length === 0 ? (
-          <p className="text-sm text-slate-500 py-6 text-center">
+          <p className="text-sm text-on-surface-variant py-6 text-center">
             ยังไม่มีผู้สมัครช่วยงานในขณะนี้
           </p>
         ) : (
@@ -169,10 +169,10 @@ export default async function OrganizerManagePage({
                   className="py-3 flex flex-col sm:flex-row justify-between sm:items-center gap-2 text-sm"
                 >
                   <div>
-                    <span className="font-medium text-neutral block">
+                    <span className="font-medium text-on-surface block">
                       {app.userName}
                     </span>
-                    <span className="text-sm text-slate-500">
+                    <span className="text-sm text-on-surface-variant">
                       สมัครตำแหน่ง: <strong>{role?.roleName}</strong>
                     </span>
                   </div>
@@ -181,9 +181,9 @@ export default async function OrganizerManagePage({
                     <span
                       className={`text-sm px-2.5 py-1 rounded font-medium ${
                         app.status === "ACCEPTED"
-                          ? "bg-green-100 text-green-700"
+                          ? "bg-success/10 text-emerald-700"
                           : app.status === "REJECTED"
-                          ? "bg-red-100 text-red-600"
+                          ? "bg-error-container text-on-error-container"
                           : "bg-yellow-100 text-yellow-700"
                       }`}
                     >

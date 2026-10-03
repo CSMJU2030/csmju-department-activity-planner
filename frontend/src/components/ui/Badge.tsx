@@ -7,12 +7,12 @@ interface BadgeProps {
 
 export const Badge: React.FC<BadgeProps> = ({ children, variant = "info" }) => {
   const variants = {
-    info: "bg-secondary text-primary",
-    neutral: "bg-gray-100 text-neutral",
+    info: "bg-primary-container/10 text-primary-container",
+    neutral: "bg-surface-variant text-on-surface-variant",
   };
 
   return (
-    <span className={`text-sm font-semibold px-2.5 py-0.5 rounded ${variants[variant]}`}>
+    <span className={`text-label-sm px-2.5 py-1 rounded-full ${variants[variant]}`}>
       {children}
     </span>
   );

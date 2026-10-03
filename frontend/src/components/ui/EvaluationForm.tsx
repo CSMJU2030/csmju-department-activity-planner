@@ -17,12 +17,12 @@ export const EvaluationForm: React.FC<{ activityId: string }> = ({
   ];
 
   return (
-    <Card className="space-y-4 border-primary/20 bg-blue-50/20">
+    <Card className="space-y-4 border-primary/20 bg-primary-container/10">
       <div>
         <h3 className="text-base font-bold text-primary">
           แบบประเมินผลกิจกรรม
         </h3>
-        <p className="text-sm leading-[1.6] text-neutral">
+        <p className="text-body-md text-on-surface">
           ความคิดเห็นของคุณจะถูกนำไปพัฒนาและปรับปรุงกิจกรรมในครั้งต่อไป
         </p>
       </div>

@@ -23,7 +23,7 @@ export function ActivityCatalog({ activities }: { activities: ActivityItem[] }) 
         <div className="activity-card-body"><div className="flex flex-wrap gap-2 items-center"><span className="status-pill" data-status={a.status}>{activityStatusLabels[a.status]}</span><span className="muted">{categoryLabels[a.category] ?? a.category}</span></div>
           <h3><Link href={`/activities/${a.id}`}>{a.title}</Link></h3><p className="muted line-clamp-2">{a.description}</p>
           <dl className="activity-meta"><div><dt>วันและเวลา</dt><dd>{formatActivityDate(a.startAt)}</dd></div><div><dt>สถานที่</dt><dd>{a.location}</dd></div></dl>
-          <div className="card-bottom"><span className="muted">ผู้เข้าร่วม <strong className="text-neutral">{a.currentParticipants}/{a.maxParticipants}</strong> คน</span><Link href={`/activities/${a.id}`} className="secondary-link">ดูรายละเอียด →</Link></div>
+          <div className="card-bottom"><span className="muted">ผู้เข้าร่วม <strong className="text-on-surface">{a.currentParticipants}/{a.maxParticipants}</strong> คน</span><Link href={`/activities/${a.id}`} className="secondary-link">ดูรายละเอียด →</Link></div>
         </div></article>)}</div>}
   </section>;
 }

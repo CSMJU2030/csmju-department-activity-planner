@@ -38,7 +38,7 @@ export default async function ActivityDetailPage({
         </Link>
         {activity.createdBy === currentUser.id && <Link
           href={`/organizer/${activity.id}/manage`}
-          className="text-sm bg-secondary text-primary px-3 py-1.5 rounded-md font-medium hover:bg-secondary/80 transition-colors border border-primary/20"
+          className="text-label-md bg-primary-container/10 text-primary-container px-3 py-1.5 rounded-lg hover:bg-primary-container/20 transition-colors border border-primary-container/20"
         >
           จัดการกิจกรรม (Organizer) &rarr;
         </Link>}
@@ -59,17 +59,17 @@ export default async function ActivityDetailPage({
           <span
             className={`text-sm px-2.5 py-1 rounded-full font-medium shrink-0 ${
               activity.status === "COMPLETED"
-                ? "bg-gray-100 text-gray-700"
+                ? "bg-surface-variant text-on-surface-variant"
                 : isFull
-                  ? "bg-red-100 text-red-600"
-                  : "bg-green-100 text-green-700"
+                  ? "bg-error-container text-on-error-container"
+                  : "bg-success/10 text-emerald-700"
             }`}
           >
             {activityStatusLabels[activity.status]}
           </span>
         </div>
 
-        <div className="space-y-2 text-sm text-neutral border-y border-gray-100 py-4">
+        <div className="space-y-2 text-sm text-on-surface border-y border-outline-variant/40 py-4">
           <p>
             <strong>สถานที่:</strong> {activity.location}
           </p>
@@ -86,10 +86,10 @@ export default async function ActivityDetailPage({
         </div>
 
         <div className="space-y-2">
-          <h2 className="text-base font-bold text-neutral">
+          <h2 className="text-base font-bold text-on-surface">
             รายละเอียดกิจกรรม
           </h2>
-          <p className="text-sm text-neutral leading-relaxed whitespace-pre-line">
+          <p className="text-sm text-on-surface leading-relaxed whitespace-pre-line">
             {activity.description}
           </p>
         </div>
@@ -109,8 +109,8 @@ export default async function ActivityDetailPage({
       {activity.status === "COMPLETED" && (
         <div>
           {hasEvaluated ? (
-            <Card className="text-center py-4 bg-green-50 border-green-200">
-              <p className="text-sm font-semibold text-green-700">
+            <Card className="text-center py-4 bg-success/10 border-success/20">
+              <p className="text-sm font-semibold text-emerald-700">
                 คุณได้ส่งแบบประเมินกิจกรรมนี้เรียบร้อยแล้ว
                 ขอบคุณสำหรับความคิดเห็น
               </p>
@@ -118,7 +118,7 @@ export default async function ActivityDetailPage({
           ) : isRegistered ? (
             <EvaluationForm activityId={activity.id} />
           ) : (
-            <Card><p className="text-sm leading-[1.6] text-neutral">เฉพาะผู้ที่ลงทะเบียนเข้าร่วมกิจกรรมนี้เท่านั้นที่ประเมินได้</p></Card>
+            <Card><p className="text-body-md text-on-surface">เฉพาะผู้ที่ลงทะเบียนเข้าร่วมกิจกรรมนี้เท่านั้นที่ประเมินได้</p></Card>
           )}
         </div>
       )}
@@ -130,7 +130,7 @@ export default async function ActivityDetailPage({
         </h2>
 
         {myApplication && (
-          <div className="p-3 bg-secondary rounded-md text-sm text-primary font-medium">
+          <div className="p-3 bg-primary-container/10 rounded-lg text-sm text-primary font-medium">
             สถานะใบสมัครของคุณ: {myApplication.status} (
             {myApplication.status === "ACCEPTED"
               ? "ผ่านการคัดเลือกแล้ว"
@@ -145,16 +145,16 @@ export default async function ActivityDetailPage({
           {activityRoles.map((role) => (
             <div
               key={role.id}
-              className="p-3 border border-gray-100 rounded-md flex justify-between items-center bg-gray-50/50"
+              className="p-3 border border-outline-variant/40 rounded-lg flex justify-between items-center bg-surface/50"
             >
               <div>
-                <h4 className="font-semibold text-sm text-neutral">
+                <h4 className="font-semibold text-sm text-on-surface">
                   {role.roleName}
                 </h4>
                 <p className="text-sm text-gray-500 mt-0.5">
                   {role.description}
                 </p>
-                <span className="text-sm text-slate-500 mt-1 block">
+                <span className="text-sm text-on-surface-variant mt-1 block">
                   ต้องการ: {role.maxMembers} คน
                 </span>
               </div>

@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { IsNotEmpty, IsString, Matches, MaxLength } from 'class-validator';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
-import { CoreHubIdentity } from '../auth/core-hub-identity';
+import { CoreHubIdentity, SubsystemRole } from '../auth/core-hub-identity';
 import { AppException } from '../common/errors';
 import { PrismaService } from '../prisma/prisma.service';
 import { RequirePermissions } from '../auth/decorators/require-permissions.decorator';
@@ -15,13 +15,13 @@ export class GrantHeadDto {
   coreUserId!: string;
 }
 
-/** All endpoints also check the verified Core role; no client role is trusted. */
+/** Checks the subsystem role derived from the verified Core identity. */
 @Controller('v1/admin/activity-heads')
 @RequirePermissions(Permission.ACTIVITY_HEAD_MANAGE)
 export class HeadsController {
   constructor(private readonly prisma: PrismaService) {}
   private requireAdmin(user: CoreHubIdentity): void {
-    if (user.coreRole !== 'admin') throw AppException.forbidden('เฉพาะผู้ดูแลระบบเท่านั้นที่จัดการสิทธิ์ Head ได้');
+    if (user.subsystemRole !== SubsystemRole.ADMIN) throw AppException.forbidden('เฉพาะผู้ดูแลระบบเท่านั้นที่จัดการสิทธิ์ Head ได้');
   }
 
   @Get()

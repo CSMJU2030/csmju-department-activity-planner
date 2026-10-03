@@ -45,7 +45,7 @@ export function CoreSession({ signedIn, available }: { signedIn: boolean; availa
   }, [signedIn, available]);
 
   if (!expired) return null;
-  return <p role="status" className="bg-secondary text-primary text-sm leading-relaxed px-6 py-3 text-center">
+  return <p role="status" className="bg-primary-container/10 text-primary text-sm leading-relaxed px-6 py-3 text-center">
     การเข้าสู่ระบบหมดเวลา กรุณาเก็บข้อความที่กรอกไว้ก่อนเข้าสู่ระบบอีกครั้ง{" "}
     <a className="underline" href="/auth/login" onClick={(event) => {
       event.preventDefault();
