@@ -1,4 +1,5 @@
 import React from "react";
+import { inputClass } from "@/csmju";
 
 interface TextareaProps
   extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
@@ -27,9 +28,7 @@ export const Textarea: React.FC<TextareaProps> = ({
         aria-invalid={error ? true : undefined}
         aria-describedby={[describedBy, error && id ? `${id}-error` : undefined].filter(Boolean).join(" ") || undefined}
         rows={rows}
-        className={`w-full px-3 py-2 text-body-md rounded-lg border bg-surface-container-lowest text-on-surface placeholder:text-outline focus:ring-2 focus:ring-accent focus:border-accent transition-colors ${
-          error ? "border-error" : "border-outline-variant"
-        } ${className}`}
+        className={`${inputClass} ${error ? "input-error" : ""} ${className}`}
         {...props}
       />
       {error && <p id={id ? `${id}-error` : undefined} role="alert" className="text-sm text-error">ข้อผิดพลาด: {error}</p>}

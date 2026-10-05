@@ -15,6 +15,14 @@ export function CoreSession({ signedIn, available }: { signedIn: boolean; availa
     const changed = (event: Event) => {
       if ((event.target as HTMLElement)?.closest("form")) dirty = true;
     };
+    const signingOut = (event: Event) => {
+      const form = event.target;
+      if (form instanceof HTMLFormElement && new URL(form.action).pathname === "/auth/logout") {
+        stopped = true;
+        sessionStorage.removeItem(SIGNED_IN_KEY);
+        sessionStorage.removeItem(ATTEMPT_KEY);
+      }
+    };
     const renew = () => {
       const last = Number(sessionStorage.getItem(ATTEMPT_KEY) ?? 0);
       if (dirty || Date.now() - last < 30000) { setExpired(true); return; }
@@ -35,12 +43,14 @@ export function CoreSession({ signedIn, available }: { signedIn: boolean; availa
     };
     document.addEventListener("input", changed);
     document.addEventListener("change", changed);
+    document.addEventListener("submit", signingOut, true);
     const timer = window.setInterval(check, 30000);
     return () => {
       stopped = true;
       window.clearInterval(timer);
       document.removeEventListener("input", changed);
       document.removeEventListener("change", changed);
+      document.removeEventListener("submit", signingOut, true);
     };
   }, [signedIn, available]);
 

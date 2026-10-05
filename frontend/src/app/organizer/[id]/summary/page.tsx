@@ -24,7 +24,7 @@ export default async function ActivitySummaryPage({
       : "0.0";
 
   return (
-    <main className="p-8 max-w-3xl mx-auto space-y-6">
+    <section className="p-8 max-w-3xl mx-auto space-y-6">
       <div>
         <Link href={`/organizer/${activity.id}/manage`} className="text-sm text-primary hover:underline">
           &larr; กลับหน้าจัดการกิจกรรม
@@ -81,6 +81,6 @@ export default async function ActivitySummaryPage({
           </ul>
         </Card>
       </div>
-    </main>
+    </section>
   );
 }

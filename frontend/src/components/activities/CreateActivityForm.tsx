@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { CheckIcon } from "@/csmju";
 import { useActionState, useState } from "react";
 import { createActivityAction } from "@/app/actions/activity";
 import { Input } from "@/components/ui/Input";
@@ -32,17 +33,17 @@ export function CreateActivityForm() {
 
   if (result.success && result.activityId) {
     return (
-      <section className="empty-panel" aria-labelledby="created-title">
-        <span className="empty-symbol" aria-hidden="true">✓</span>
+      <section className="rounded-xl border border-dashed border-outline-variant bg-surface-container-lowest text-center p-8 [&_h3]:text-headline-md [&_h3]:mt-3 [&_h3]:mb-2 [&_p]:text-body-md [&_p]:text-on-surface-variant [&_p]:mb-6" aria-labelledby="created-title">
+        <span className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-primary-container/10 text-primary-container" aria-hidden="true"><CheckIcon className="h-6 w-6" /></span>
         <h2 id="created-title" className="text-2xl font-bold text-primary" role="status">
           สร้างกิจกรรมเรียบร้อยแล้ว
         </h2>
         <p className="mt-3">{title} พร้อมเปิดรับผู้เข้าร่วมแล้ว</p>
         <div className="flex flex-wrap justify-center gap-3">
-          <Link className="primary-link" href={`/organizer/${result.activityId}/manage`}>
+          <Link className="btn-gradient inline-flex items-center justify-center min-h-11 rounded-lg px-4 py-2.5 text-label-md text-white shadow-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent disabled:opacity-50" href={`/organizer/${result.activityId}/manage`}>
             ไปหน้าจัดการกิจกรรม →
           </Link>
-          <Link className="secondary-link" href={`/activities/${result.activityId}`}>
+          <Link className="inline-flex items-center justify-center min-h-11 rounded-lg border border-outline-variant px-4 py-2.5 text-label-md text-on-surface-variant transition-colors hover:bg-surface-variant/50 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent" href={`/activities/${result.activityId}`}>
             ดูหน้ากิจกรรม
           </Link>
         </div>
@@ -51,10 +52,10 @@ export function CreateActivityForm() {
   }
 
   return (
-    <form action={submit} className="create-layout">
+    <form action={submit} className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start [&>:first-child]:min-w-0 xl:[&>:first-child]:col-span-2">
       <fieldset disabled={pending} className="min-w-0 space-y-6">
-        <section className="workspace-card space-y-5" aria-labelledby="basic-title">
-          <div className="form-section-title">
+        <section className="min-w-0 rounded-xl border border-outline-variant/40 bg-surface-container-lowest shadow-sm p-6 space-y-5" aria-labelledby="basic-title">
+          <div className="flex gap-4 items-start pb-4 border-b border-outline-variant/40 [&>span]:bg-primary-container/10 [&>span]:text-primary-container [&>span]:px-3 [&>span]:py-2 [&>span]:rounded-lg [&_p]:text-on-surface-variant [&_p]:mt-1">
             <span aria-hidden="true">01</span>
             <div>
               <h2 id="basic-title">เล่าไอเดียกิจกรรมของคุณ</h2>
@@ -72,7 +73,7 @@ export function CreateActivityForm() {
             onChange={(e) => setTitle(e.target.value)}
             aria-describedby="title-count"
           />
-          <p id="title-count" className="muted text-right">
+          <p id="title-count" className="text-body-md leading-relaxed text-on-surface-variant text-right">
             {title.length} / 150 ตัวอักษร
           </p>
 
@@ -87,7 +88,7 @@ export function CreateActivityForm() {
             onChange={(e) => setCategory(e.target.value)}
             aria-describedby="category-count"
           />
-          <p id="category-count" className="muted text-right">
+          <p id="category-count" className="text-body-md leading-relaxed text-on-surface-variant text-right">
             {category.length} / 150 ตัวอักษร
           </p>
 
@@ -105,20 +106,20 @@ export function CreateActivityForm() {
             onChange={(e) => setDescription(e.target.value)}
             aria-describedby="description-count"
           />
-          <p id="description-count" className="muted text-right">
+          <p id="description-count" className="text-body-md leading-relaxed text-on-surface-variant text-right">
             {description.length} / 5,000 ตัวอักษร
           </p>
         </section>
 
-        <section className="workspace-card space-y-5" aria-labelledby="schedule-title">
-          <div className="form-section-title">
+        <section className="min-w-0 rounded-xl border border-outline-variant/40 bg-surface-container-lowest shadow-sm p-6 space-y-5" aria-labelledby="schedule-title">
+          <div className="flex gap-4 items-start pb-4 border-b border-outline-variant/40 [&>span]:bg-primary-container/10 [&>span]:text-primary-container [&>span]:px-3 [&>span]:py-2 [&>span]:rounded-lg [&_p]:text-on-surface-variant [&_p]:mt-1">
             <span aria-hidden="true">02</span>
             <div>
               <h2 id="schedule-title">วัน เวลา และสถานที่</h2>
               <p>ระบุเวลาประเทศไทย เพื่อให้ผู้เข้าร่วมวางแผนได้</p>
             </div>
           </div>
-          <div className="form-two-columns">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Input
               id="startAt"
               name="startAt"
@@ -156,8 +157,8 @@ export function CreateActivityForm() {
           />
         </section>
 
-        <section className="workspace-card space-y-5" aria-labelledby="capacity-title">
-          <div className="form-section-title">
+        <section className="min-w-0 rounded-xl border border-outline-variant/40 bg-surface-container-lowest shadow-sm p-6 space-y-5" aria-labelledby="capacity-title">
+          <div className="flex gap-4 items-start pb-4 border-b border-outline-variant/40 [&>span]:bg-primary-container/10 [&>span]:text-primary-container [&>span]:px-3 [&>span]:py-2 [&>span]:rounded-lg [&_p]:text-on-surface-variant [&_p]:mt-1">
             <span aria-hidden="true">03</span>
             <div>
               <h2 id="capacity-title">จำนวนผู้เข้าร่วม</h2>
@@ -176,19 +177,19 @@ export function CreateActivityForm() {
               required
             />
           </div>
-          <p className="muted">
+          <p className="text-body-md leading-relaxed text-on-surface-variant">
             เมื่อมีผู้ลงทะเบียนครบ ระบบจะเปลี่ยนสถานะเป็น “ที่นั่งเต็ม”
           </p>
         </section>
 
         {result.error && (
-          <div className="form-notice" role="alert">
+          <div className="p-4 bg-primary-container/10 text-primary-container rounded-lg text-body-md" role="alert">
             {result.error}
           </div>
         )}
 
-        <div className="form-submit-bar">
-          <Link href="/my-activities" className="secondary-link">
+        <div className="flex flex-wrap items-center justify-between gap-4 py-6">
+          <Link href="/my-activities" className="inline-flex items-center justify-center min-h-11 rounded-lg border border-outline-variant px-4 py-2.5 text-label-md text-on-surface-variant transition-colors hover:bg-surface-variant/50 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent">
             กลับไปกิจกรรมของฉัน
           </Link>
           <Button type="submit" disabled={pending || Boolean(dateError)}>
@@ -197,8 +198,8 @@ export function CreateActivityForm() {
         </div>
       </fieldset>
 
-      <aside className="create-guide">
-        <p className="eyebrow">จากไอเดียสู่กิจกรรมจริง</p>
+      <aside className="min-w-0 rounded-xl border border-outline-variant/40 bg-surface-container-lowest shadow-sm p-6 [&_ol]:grid [&_ol]:gap-6 [&_ol]:my-6 [&_li>strong]:block [&_li>span]:block [&_li>span]:text-on-surface-variant">
+        <p className="text-label-md text-primary-container">จากไอเดียสู่กิจกรรมจริง</p>
         <h2>
           พร้อมเริ่มสิ่งใหม่
           <br />
@@ -219,7 +220,7 @@ export function CreateActivityForm() {
             <span>ระบุจำนวนผู้เข้าร่วมสูงสุด</span>
           </li>
         </ol>
-        <div className="form-notice">
+        <div className="p-4 bg-primary-container/10 text-primary-container rounded-lg text-body-md">
           <strong>เมื่อกดสร้างกิจกรรม</strong>
           <p>
             กิจกรรมจะเปิดรับสมัครทันที และคุณสามารถแก้ไขรายละเอียดได้จากหน้าจัดการ

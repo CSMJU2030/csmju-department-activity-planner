@@ -27,7 +27,7 @@ export default async function OrganizerManagePage({
   const applications = unwrap(await listApplications(id));
 
   return (
-    <main className="p-8 max-w-4xl mx-auto space-y-6 leading-[1.6]">
+    <section className="p-8 max-w-4xl mx-auto space-y-6 leading-[1.6]">
       {/* ส่วนหัวหน้าจัดการและปุ่มเปลี่ยนเส้นทาง */}
       <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
         <div>
@@ -102,9 +102,9 @@ export default async function OrganizerManagePage({
 
       {/* บล็อกสรุปภาพรวมโควตาตำแหน่งทีมงาน */}
       <div>
-        <div className="section-heading mb-3">
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-3">
           <h2 className="text-base font-bold text-primary">ตำแหน่งทีมงานที่เปิดรับ</h2>
-          <span className="muted">{activityRoles.length} ตำแหน่ง</span>
+          <span className="text-body-md leading-relaxed text-on-surface-variant">{activityRoles.length} ตำแหน่ง</span>
         </div>
         <Card className="mb-4">
           <ActionForm
@@ -114,7 +114,7 @@ export default async function OrganizerManagePage({
               return createActivityRoleAction(activity.id, formData);
             }}
           >
-            <div className="form-two-columns">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <label className="space-y-1">ชื่อตำแหน่ง *<input name="roleName" required maxLength={100} placeholder="เช่น พิธีกร / ผู้ช่วยวิทยากร" className="w-full px-3 py-2 text-sm rounded-lg border border-outline-variant" /></label>
               <label className="space-y-1">จำนวนที่รับ *<input name="maxMembers" required min={1} max={999} type="number" defaultValue={1} className="w-full px-3 py-2 text-sm rounded-lg border border-outline-variant" /></label>
             </div>
@@ -210,6 +210,6 @@ export default async function OrganizerManagePage({
           </div>
         )}
       </Card>
-    </main>
+    </section>
   );
 }
