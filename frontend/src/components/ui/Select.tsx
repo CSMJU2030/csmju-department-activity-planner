@@ -1,4 +1,5 @@
 import React from "react";
+import { inputClass } from "@/csmju";
 
 interface Option {
   value: string;
@@ -31,9 +32,7 @@ export const Select: React.FC<SelectProps> = ({
         id={id}
         aria-invalid={error ? true : undefined}
         aria-describedby={[describedBy, error && id ? `${id}-error` : undefined].filter(Boolean).join(" ") || undefined}
-        className={`w-full px-3 py-2 text-body-md rounded-lg border bg-surface-container-lowest text-on-surface focus:ring-2 focus:ring-accent focus:border-accent transition-colors ${
-          error ? "border-error" : "border-outline-variant"
-        } ${className}`}
+        className={`${inputClass} ${error ? "input-error" : ""} ${className}`}
         {...props}
       >
         {options.map((opt) => (

@@ -1,11 +1,12 @@
 import React from "react";
+import { cardClass } from "@/csmju";
 
 export const Card: React.FC<{ children: React.ReactNode; className?: string }> = ({
   children,
   className = "",
 }) => {
   return (
-    <div className={`bg-surface-container-lowest border border-outline-variant/40 rounded-xl p-6 shadow-sm ${className}`}>
+    <div className={`${cardClass} p-6 ${className}`}>
       {children}
     </div>
   );

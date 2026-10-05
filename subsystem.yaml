@@ -32,5 +32,19 @@ owners:
   aie: "@csmju2030/aie-department-activity-planner"
 
 display_name: "Department Activity Planner"
+local_components:
+  - ActivityCatalog
+  - ActivityStatusBadge
+  - CoreSession
+  - SignedOut
+  - ActionForm
+  - RegistrationForm
+  - EvaluationForm
+  - Button
+  - Card
+  - Input
+  - Select
+  - Textarea
+  - Badge
 repo: github.com/CSMJU2030/csmju-department-activity-planner
 status: proposed

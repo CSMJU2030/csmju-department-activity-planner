@@ -30,7 +30,7 @@ export default async function ActivityDetailPage({
     activity.maxParticipants - activity.currentParticipants;
 
   return (
-    <main className="p-8 max-w-2xl mx-auto space-y-6">
+    <section className="p-8 max-w-2xl mx-auto space-y-6">
       {/* ส่วนหัว: ปุ่มย้อนกลับ และ ทางลัดไปหน้าจัดการ (Organizer Mode) */}
       <div className="flex justify-between items-center">
         <Link href="/" className="text-sm text-primary hover:underline">
@@ -172,6 +172,6 @@ export default async function ActivityDetailPage({
           ))}
         </div>
       </Card>
-    </main>
+    </section>
   );
 }

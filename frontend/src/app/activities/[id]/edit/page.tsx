@@ -33,7 +33,7 @@ export default async function EditActivityPage({
   ];
 
   return (
-    <main className="p-8 max-w-2xl mx-auto space-y-6">
+    <section className="p-8 max-w-2xl mx-auto space-y-6">
       <div className="flex justify-between items-center">
         <Link
           href={`/organizer/${activity.id}/manage`}
@@ -119,6 +119,6 @@ export default async function EditActivityPage({
           </div>
         </ActionForm>
       </Card>
-    </main>
+    </section>
   );
 }
