@@ -30,7 +30,9 @@ RUN corepack enable pnpm
 
 COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
 COPY backend/package.json backend/
-RUN pnpm install --frozen-lockfile --prod --filter backend... --ignore-scripts \
+COPY backend/prisma.config.ts backend/
+COPY backend/prisma backend/prisma/
+RUN pnpm install --frozen-lockfile --prod --filter backend... \
  && pnpm store prune
 
 # dist/ มีทั้งโค้ดที่ compile แล้ว (dist/src) และ Prisma client (dist/generated/prisma)
