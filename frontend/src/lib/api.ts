@@ -7,7 +7,7 @@ import type { ActivityItem, ActivityStatus, ApplicationStatus } from "@/types/ac
  * forward the HttpOnly SSO cookie, and the backend verifies it against the
  * Core Hub JWKS on every request.
  */
-const BACKEND_URL = process.env.BACKEND_URL ?? "http://127.0.0.1:4202";
+const BACKEND_URL = process.env.BACKEND_URL ?? "http://127.0.0.1:4211";
 
 /** Standard cookie name (auth-contract.md §5.1). */
 export const SSO_COOKIE = `${(process.env.SUBSYSTEM_ID ?? "csmju-department-activity-planner").replace(/-/g, "_")}_access_token`;

@@ -31,7 +31,7 @@ services:
         condition: service_healthy
     environment:
       NODE_ENV: ${NODE_ENV:-development}
-      PORT: 4202
+      PORT: 4211
       DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD:-postgres}@csmju-department-activity-planner-db:5432/csmju_department_activity_planner
       CORE_HUB_URL: ${CORE_HUB_URL:-https://csmju2030.jowave.com}
       CORE_HUB_WEB_URL: ${CORE_HUB_WEB_URL:-https://csmju2030.jowave.com}
@@ -42,7 +42,7 @@ services:
       SUBSYSTEM_NAME: ${SUBSYSTEM_NAME:-Department Activity Planner}
       LOCAL_ADMIN_CORE_USER_IDS: ${LOCAL_ADMIN_CORE_USER_IDS:-}
     ports:
-      - '4202:4202'
+      - '4211:4211'
     extra_hosts:
       # Lets the container reach a Core Hub running on the host (Linux support)
       - 'host.docker.internal:host-gateway'
@@ -52,7 +52,7 @@ services:
           'CMD',
           'node',
           '-e',
-          "fetch('http://127.0.0.1:4202/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+          "fetch('http://127.0.0.1:4211/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
         ]
       interval: 10s
       timeout: 5s

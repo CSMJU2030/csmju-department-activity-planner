@@ -36,7 +36,7 @@ export default (): AppConfig => {
 
   return {
     nodeEnv: process.env.NODE_ENV ?? 'development',
-    port: num(process.env.PORT, 4202),
+    port: num(process.env.PORT, 4211),
     subsystemId: process.env.SUBSYSTEM_ID ?? 'csmju-department-activity-planner',
     subsystemName: process.env.SUBSYSTEM_NAME ?? 'Department Activity Planner',
     localAdminCoreUserIds: (process.env.LOCAL_ADMIN_CORE_USER_IDS ?? '').split(',').map(id => id.trim()).filter(Boolean),
