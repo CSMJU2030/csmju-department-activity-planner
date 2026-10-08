@@ -4,10 +4,10 @@
   "private": true,
   "description": "Department Activity Planner - Next.js frontend, sign-in through Core Hub SSO only",
   "scripts": {
-    "dev": "next dev --webpack -p 3002",
-    "start:dev": "next dev --webpack -p 3002",
+    "dev": "next dev --webpack -p 3211",
+    "start:dev": "next dev --webpack -p 3211",
     "build": "next build --webpack",
-    "start": "next start -p 3002",
+    "start": "next start -p 3211",
     "lint": "eslint",
     "test": "node --test tests/actions.test.mjs",
     "typecheck": "next typegen && tsc --noEmit"
