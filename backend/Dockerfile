@@ -12,6 +12,9 @@ ENV DATABASE_URL=postgresql://build:build@localhost:5432/build_only
 
 COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
 COPY backend/package.json backend/
+# postinstall runs prisma generate, so its configuration and schema must exist.
+COPY backend/prisma.config.ts backend/
+COPY backend/prisma backend/prisma/
 RUN pnpm install --frozen-lockfile --filter backend...
 
 COPY backend/ backend/
