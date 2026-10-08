@@ -23,12 +23,13 @@ describe('Subsystem permission model (spec §15, §16)', () => {
   });
 
   describe('STAFF', () => {
-    it('browses and takes part but does not organise', () => {
+    it('browses, takes part, creates and manages its own activities', () => {
       const role = SubsystemRole.STAFF;
       expect(can(role, Permission.ACTIVITY_READ)).toBe(true);
       expect(can(role, Permission.ACTIVITY_PARTICIPATE)).toBe(true);
-      expect(can(role, Permission.ACTIVITY_CREATE)).toBe(false);
-      expect(can(role, Permission.ACTIVITY_MANAGE_OWN)).toBe(false);
+      expect(can(role, Permission.ACTIVITY_CREATE)).toBe(true);
+      expect(can(role, Permission.ACTIVITY_MANAGE_OWN)).toBe(true);
+      expect(can(role, Permission.ACTIVITY_HEAD_MANAGE)).toBe(false);
     });
   });
 

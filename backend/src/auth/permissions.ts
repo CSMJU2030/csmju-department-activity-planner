@@ -16,7 +16,7 @@ export enum Permission {
   ACTIVITY_READ = 'activity:read',
   /** Register, cancel, apply for a team role, evaluate. */
   ACTIVITY_PARTICIPATE = 'activity:participate',
-  /** Create an activity (the service also requires the student class head). */
+  /** Create an activity (students also require active Head permission). */
   ACTIVITY_CREATE = 'activity:create',
   /** Edit, change status, manage roles/applications of one's own activity. */
   ACTIVITY_MANAGE_OWN = 'activity:manage:own',
@@ -33,10 +33,12 @@ const STUDENT_PERMISSIONS: Permission[] = [
 /** Alumni may look at activities but not take part. */
 const ALUMNI_PERMISSIONS: Permission[] = [Permission.ACTIVITY_READ];
 
-/** Faculty/staff browse and take part; only student class heads organise. */
+/** Faculty/staff browse, take part, and organise their own activities. */
 const STAFF_PERMISSIONS: Permission[] = [
   Permission.ACTIVITY_READ,
   Permission.ACTIVITY_PARTICIPATE,
+  Permission.ACTIVITY_CREATE,
+  Permission.ACTIVITY_MANAGE_OWN,
 ];
 
 const ADMIN_PERMISSIONS: Permission[] = Object.values(Permission);
