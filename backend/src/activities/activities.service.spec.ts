@@ -85,13 +85,13 @@ const service = (prisma: PrismaService, heads: string[] = [HEAD_ID]) => {
 };
 
 describe('ActivitiesService business rules', () => {
-  it('lets only a student class head create activities', async () => {
+  it('allows staff and student heads while denying ordinary students', async () => {
     const { prisma } = fakePrisma(baseActivity());
     const svc = service(prisma);
     expect(await svc.canCreateActivity(identity(HEAD_ID))).toBe(true);
     expect(await svc.canCreateActivity(identity('someone-else'))).toBe(false);
-    // a faculty member who happens to share the id is still not a student
-    expect(await svc.canCreateActivity(identity(HEAD_ID, SubsystemRole.STAFF))).toBe(false);
+    expect(await svc.canCreateActivity(identity('staff-without-head', SubsystemRole.STAFF))).toBe(true);
+    expect(await svc.canCreateActivity(identity(HEAD_ID, SubsystemRole.ALUMNI))).toBe(false);
     await expect(
       svc.create(identity('someone-else'), {
         title: 'x',

@@ -52,10 +52,11 @@ export class ActivitiesService {
   ) {}
 
   /**
-   * Only a student who is a class head may create activities. Class heads are
+   * Staff and students with active Head permission may create activities. Heads are
    * local database permissions granted by a verified Core admin.
    */
   async canCreateActivity(user: CoreHubIdentity): Promise<boolean> {
+    if (user.subsystemRole === SubsystemRole.STAFF) return true;
     if (user.subsystemRole !== SubsystemRole.STUDENT) return false;
     const head = await this.prisma.activityHead.findUnique({ where: { coreUserId: user.id } });
     return head?.active === true;
@@ -197,7 +198,7 @@ export class ActivitiesService {
 
   async create(user: CoreHubIdentity, dto: CreateActivityDto): Promise<ActivityItem> {
     if (!(await this.canCreateActivity(user))) {
-      throw AppException.forbidden('เฉพาะนักศึกษาที่เป็นหัวหน้าห้องเท่านั้นที่สร้างกิจกรรมได้');
+      throw AppException.forbidden('เฉพาะเจ้าหน้าที่ อาจารย์ หรือนักศึกษาที่เป็นหัวหน้าห้องเท่านั้นที่สร้างกิจกรรมได้');
     }
     const startAt = new Date(dto.startAt);
     const endAt = new Date(dto.endAt);
